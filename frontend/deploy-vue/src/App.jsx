@@ -2,9 +2,37 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import SelectList from './components/SelectList'
+import { useForm, Controller } from "react-hook-form";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // TODO : recuperer la liste des OS depuis le backend (fetch)
+  const [os, setOs] = useState(["Ubuntu", "Debian", "Fedora", "Arch Linux"]);
+
+  // For Action with react-router-dom
+  //const submit = useSubmit();
+
+    const {
+    register,
+    control, // Utilisation de control pour intégrer react-select via Controller
+    handleSubmit,
+    clearErrors,
+    setError,
+    formState: { errors, isSubmitting, isSubmitSuccessful, isSubmitted },
+  } = useForm({
+    defaultValues: {
+      OS: "",
+      
+    },
+  });
+
+
+  function mySubmit(values) {
+   /*  submit(values, {
+      method: "post",
+    }); */
+    console.log(values)
+  }
 
   return (
     <>
@@ -18,9 +46,35 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+        
+
+
+        <form
+        className="flex flex-auto flex-col justify-around items-center "
+        onSubmit={handleSubmit(mySubmit)}
+      >
+        <div className="flex w-72 justify-between">
+          <label className="ds-formcontrol-label">OS </label>
+          <Controller
+            name="OS"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <SelectList
+                {...field}
+                tab={os}
+                onChange={(selectedOption) => {
+                  field.onChange(selectedOption.value); // ← injecte la valeur dans react-hook-form
+                  //fetchCountryList(selectedOption.value); // ← appelle ta fonction fetch
+                }}
+                id="OS"
+              />
+            )}
+          />
+        </div>
+        </form>
+
+
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
