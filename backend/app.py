@@ -1,0 +1,19 @@
+from flask import Flask, request, session, jsonify
+from flask_cors import CORS
+from flask_session import Session
+import redis
+from flask_caching import Cache
+from dotenv import load_dotenv
+import os
+
+
+app = Flask(__name__)
+app.secret_key = "my_secret_todo" #os.getenv('SECRET_KEY')  # Secret key for session var
+CORS(app, supports_credentials=True)  # CORS enabled for flask
+
+@app.route("/")
+def home():
+    return "Hello, World!"
+
+if __name__ == "__main__":
+    app.run(debug=True)

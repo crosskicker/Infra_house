@@ -1,0 +1,6 @@
+flask
+flask-cors
+flask-session
+redis
+flask-caching
+python-dotenv
