@@ -23,7 +23,7 @@ def new_client(client_name):
         dst_file = os.path.join(client_dir, filename)
         shutil.copy(src_file, dst_file)
     
-    # Update the variables.tf.json file with the client's configuration
+    """ # Update the variables.tf.json file with the client's configuration
     variables_file = os.path.join(client_dir, "variables.tf.json")
     with open(variables_file, 'r') as f:
         variables = json.load(f)
@@ -31,7 +31,7 @@ def new_client(client_name):
     
     # To apply changes
     with open(variables_file, 'w') as f:
-        json.dump(variables, f, indent=2)
+        json.dump(variables, f, indent=2) """
     
     print(f"Client '{client_name}' created successfully.")
 
