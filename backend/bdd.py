@@ -15,6 +15,9 @@ client = MongoClient(MONGO_URL, appname="myapp", serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 
 def ensure_collections_and_indexes():
+    """" Crée les collections, valideurs et indexes.
+        Idempotent : peut être appelé à chaque démarrage de l'application.
+    """
     # Validators (JSON Schema). Création si absente, sinon collMod (idempotent).
     def ensure_validator(name, schema):
         try:
@@ -66,6 +69,9 @@ def ensure_collections_and_indexes():
     # db.vm_events.create_index("createdAt", expireAfterSeconds=60*60*24*90)
 
 def create_user(email: str, password_hash: str) -> ObjectId:
+    """ Crée un utilisateur. Retourne son _id.
+        Lève DuplicateKeyError si email déjà utilisé.
+    """
     now = datetime.now(timezone.utc)
     res = db.users.insert_one({
         "email": email,
@@ -76,9 +82,17 @@ def create_user(email: str, password_hash: str) -> ObjectId:
     return res.inserted_id
 
 def upsert_vm(user_id: ObjectId, provider: str, external_id: str, patch: dict):
+    """ Crée ou met à jour une VM.
+        patch : dict avec les champs à mettre à jour (currentState, metadata, etc.)
+        args: user_id : ObjectId de l'utilisateur propriétaire
+        args: provider : str, nom du provider (libvirt, aws, azure, ...)
+        args: external_id : str, ID de la VM
+        args: patch : dict, info sur la VM à mettre à jour
+        Retourne le document complet après modification.
+    """
     now = datetime.now(timezone.utc)
     return db.vms.find_one_and_update(
-        {"userId": user_id, "provider": provider, "externalId": external_id},
+        {"userId": user_id, "provider": provider, "externalId": external_id },
         {"$setOnInsert": {"createdAt": now},
          "$set": {"lastSeen": now, **patch}},
         upsert=True, return_document=ReturnDocument.AFTER
@@ -109,3 +123,10 @@ if __name__ == "__main__":
                    {"currentState": "running", "metadata": {"vcpu": 2, "ramMB": 4096}}) 
     print("VM:", vm)
     print("VMs de l'utilisateur:", list_user_vms(uid))"""
+
+    result = db.vms.find({"currentState": "running"}) 
+    """ for vm in result:
+        print(vm["userId"]) """
+    result = list(result)
+    print(result)
+

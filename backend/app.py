@@ -15,5 +15,12 @@ CORS(app, supports_credentials=True)  # CORS enabled for flask
 def home():
     return "Hello, World!"
 
+@app.route("/api/create-vm", methods=["POST"])
+def create_vm():
+    data = request.json
+    print("Received data:", data)
+    # TODO : Generer le template variable Json et BDD
+    return jsonify({"message": "VM created", "data": data}), 201
+
 if __name__ == "__main__":
     app.run(debug=True)

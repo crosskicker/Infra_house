@@ -4,10 +4,11 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import SelectList from './components/SelectList'
 import { useForm, Controller } from "react-hook-form";
+import { fetchData } from './fetch'
 
 function App() {
   // TODO : recuperer la liste des OS depuis le backend (fetch)
-  const [os, setOs] = useState(["Ubuntu", "Debian", "Fedora", "Arch Linux"]);
+  const [os, setOs] = useState(["Other","Ubuntu", "Debian", "Fedora", "Arch Linux"]); //todo insérer une iso si other
   const [Vcpu, setVcpu] = useState(["1", "2", "4", "8"]);
   const [Memory, setMemory] = useState(["1", "2", "4", "8", "16"]);
   const [Disk, setDisk] = useState(["10", "20", "50", "100"]);
@@ -32,29 +33,26 @@ function App() {
       Vcpu: "",
       Memory: "",
       Disk: "",
+      ssh_key: "ssh-test",
       
     },
   });
 
 
-  function mySubmit(values) {
-   /*  submit(values, {
-      method: "post",
-    }); */
-    console.log(values)
-  }
+async function mySubmit(values) {
+  console.log("Données à envoyer :", values);
+  const response = await fetchData(values, "/api/create-vm");
+}
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
+       
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+      
       <div className="flex flex-col">
         
 
@@ -62,9 +60,9 @@ function App() {
         <form
         className="flex flex-auto flex-col justify-around items-center "
         onSubmit={handleSubmit(mySubmit)}
-      >
+        >
         <div className="flex w-72  justify-between">
-          <label className="ds-formcontrol-label">OS </label>
+          <label className="">OS </label>
           <Controller
             name="OS"
             control={control}
@@ -84,7 +82,7 @@ function App() {
         </div>
 
         <div className="flex w-72  justify-between">
-          <label className="ds-formcontrol-label">Vcpu </label>
+          <label className="">Vcpu </label>
           <Controller
             name="Vcpu"
             control={control}
@@ -104,7 +102,7 @@ function App() {
         </div>
 
         <div className="flex w-72    justify-between">
-          <label className="ds-formcontrol-label">Memory </label>
+          <label className="">Memory </label>
           <Controller
             name="Memory"
             control={control}
@@ -124,7 +122,7 @@ function App() {
         </div>
 
         <div className="flex w-72  justify-between">
-          <label className="ds-formcontrol-label">Disk </label>
+          <label className="">Disk </label>
           <Controller
             name="Disk"
             control={control}
@@ -142,6 +140,26 @@ function App() {
             )}
           />
         </div>
+
+        <div  className="flex w-72  justify-between">
+          <label className="">SSH Key</label>
+          <div className="">
+            <input
+              id="ssh_key"
+              className="border-2 "
+              type="text"
+              placeholder=""
+              {...register("ssh_key")}
+            />
+          </div>
+        </div>
+        <button
+          type="submit"
+          className=" text-black font-bold py-2 px-4 rounded"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
 
         </form>
 
