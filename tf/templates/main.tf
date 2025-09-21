@@ -27,11 +27,11 @@ resource "libvirt_volume" "disk" {
 }
 
 data "template_file" "user_data" {
-  template = file("${path.module}/config/cloud_init.cfg")
+  template = file("${path.module}/cloud_init.cfg")
 }
 
 data "template_file" "network_config" {
-  template = file("${path.module}/network/network_config.cfg")
+  template = file("${path.module}/network_config.cfg")
 }
 
 resource "libvirt_cloudinit_disk" "commoninit" {

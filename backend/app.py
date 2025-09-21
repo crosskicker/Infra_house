@@ -19,7 +19,7 @@ def home():
 def create_vm():
     data = request.json
     print("Received data:", data)
-    # TODO : Generer le template variable Json et BDD
+    # TODO : Call processing functions to create VM
     return jsonify({"message": "VM created", "data": data}), 201
 
 if __name__ == "__main__":
