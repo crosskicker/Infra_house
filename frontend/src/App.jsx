@@ -6,6 +6,7 @@ import SelectList from './components/SelectList'
 import { useForm, Controller } from "react-hook-form";
 import { fetchData } from './fetch'
 import DeployVM from './pages/DeployVM'
+import { Outlet } from 'react-router'
 
 function App() {
 
@@ -25,9 +26,18 @@ async function mySubmit(values) {
 }
 
   return (
-    <>
-    <DeployVM />
-    </>
+    
+    
+    <div className="flex min-h-screen">
+      <div className="w-64 flex-shrink-0">
+        {/* <Navigation /> */}
+        {/* <DeployVM /> */}
+      </div>
+      <main className="flex-1">
+        <Outlet />
+      </main>
+    </div>
+    
   )
 }
 

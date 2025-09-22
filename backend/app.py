@@ -19,6 +19,7 @@ def home():
 def create_vm():
     data = request.json
     print("Received data:", data)
+    # TODO : create in BDD ressources 
     # TODO : Call processing functions to create VM
     return jsonify({"message": "VM created", "data": data}), 201
 

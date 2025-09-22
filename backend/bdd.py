@@ -38,9 +38,10 @@ def ensure_collections_and_indexes():
     }
     vm_schema = {
         "bsonType": "object",
-        "required": ["userId", "provider", "externalId", "currentState", "createdAt"],
+        "required": ["userId", "name", "provider", "externalId", "currentState", "createdAt"],
         "properties": {
             "userId": {"bsonType": "objectId"},
+            "name": {"bsonType": "string"},
             "provider": {"bsonType": "string"},
             "externalId": {"bsonType": "string"},
             "currentState": {"enum": ["provisioning","running","stopped","terminated","error"]},
@@ -51,22 +52,15 @@ def ensure_collections_and_indexes():
 
     ensure_validator("users", user_schema)
     ensure_validator("vms", vm_schema)
-    try:
-        db.create_collection("vm_events")  # PAS de ignoreExisting
-    except CollectionInvalid:
-        pass  # existe déjà (ancienne version de PyMongo)
-    except OperationFailure as e:
-        # Atlas peut lever OperationFailure code 48 (NamespaceExists)
-        if getattr(e, "code", None) != 48 and "already exists" not in str(e).lower():
-            raise
+    #ensure_validator("vm_events", vm_event_schema)
 
-    # Indexes (idempotents)
+    """ # Indexes (idempotents)
     db.users.create_index("email", unique=True)
     db.vms.create_index([("userId", 1), ("provider", 1), ("externalId", 1)], unique=True)
     db.vms.create_index([("currentState", 1), ("lastSeen", -1)])
     db.vm_events.create_index([("vmId", 1), ("createdAt", -1)])
     # Exemple TTL (purge auto d'événements après N jours)
-    # db.vm_events.create_index("createdAt", expireAfterSeconds=60*60*24*90)
+    # db.vm_events.create_index("createdAt", expireAfterSeconds=60*60*24*90) """
 
 def create_user(email: str, password_hash: str) -> ObjectId:
     """ Crée un utilisateur. Retourne son _id.
