@@ -5,6 +5,7 @@ import redis
 from flask_caching import Cache
 from dotenv import load_dotenv
 import os
+from utils.bdd.bdd import *
 
 
 app = Flask(__name__)
@@ -14,6 +15,16 @@ CORS(app, supports_credentials=True)  # CORS enabled for flask
 @app.route("/")
 def home():
     return "Hello, World!"
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    print("Login attempt:", data)
+    logged = logging(data.get("username"), data.get("password"))
+    if logged:
+        return jsonify({"results": "success"}), 200
+    else:
+        return jsonify({"results": "error"}), 401
 
 @app.route("/api/create-vm", methods=["POST"])
 def create_vm():

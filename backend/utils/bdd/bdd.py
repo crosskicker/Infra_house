@@ -109,6 +109,15 @@ def user_with_vms(email: str):
     ]
     return list(db.users.aggregate(pipeline))[0]
 
+def logging(username: str, password: str) -> bool:
+    user = db.users.find_one({
+        "email": username,
+        "passwordHash": password,
+        "isActive": True
+    })
+    return user is not None
+    
+
 if __name__ == "__main__":
     ensure_collections_and_indexes()
     # Démo
@@ -118,9 +127,15 @@ if __name__ == "__main__":
     print("VM:", vm)
     print("VMs de l'utilisateur:", list_user_vms(uid))"""
 
-    result = db.vms.find({"currentState": "running"}) 
+    #result = db.vms.find({"currentState": "running"}) 
     """ for vm in result:
         print(vm["userId"]) """
-    result = list(result)
-    print(result)
+    
+    """ result = list(result)
+    print(result) """
+    #uid = create_user("toto","toto")
+    #print(uid)
+
+    lol = logging("toto","toto")
+    print(lol)
 

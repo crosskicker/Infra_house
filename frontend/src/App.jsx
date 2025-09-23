@@ -28,10 +28,11 @@ async function mySubmit(values) {
   return (
     
     
-    <div className="flex min-h-screen">
+    <div className="flex h-full">
       <div className="w-64 flex-shrink-0">
         {/* <Navigation /> */}
         {/* <DeployVM /> */}
+        <p>Menu de navigation</p>
       </div>
       <main className="flex-1">
         <Outlet />

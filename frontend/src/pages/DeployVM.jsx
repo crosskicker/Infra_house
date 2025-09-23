@@ -160,7 +160,7 @@ function DeployVM() {
             render={({ field }) => (
               <SelectList
                 {...field}
-                tab={Vcpu}
+                tab={network}
                 onChange={(selectedOption) => {
                   field.onChange(selectedOption.value); // ← injecte la valeur dans react-hook-form
                   //fetchCountryList(selectedOption.value); // ← appelle ta fonction fetch
@@ -201,7 +201,7 @@ function DeployVM() {
         <button
           type="submit"
           className="!bg-blue-600 !hover:bg-blue-700 !text-white !font-medium !py-2 !px-4 !rounded-lg !shadow-sm !transition"
-          //disabled={isSubmitting}
+          disabled={isSubmitting}
         >
          {isSubmitting ? "Submitting..." : "Submit"} 
         </button>

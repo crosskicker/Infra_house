@@ -1,13 +1,24 @@
 import { Link } from "react-router-dom";
+import Login from "./login";
+import { useState } from 'react'
+
 
 
 
 function HomePage() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100">
       <h1 className="text-4xl font-bold mb-8">Welcome to InfraHouse</h1>
-      <p className="text-lg mb-6">Your one-stop solution for managing virtual machines and services.</p>
-      <div className="space-x-4">
+      
+      
+      {!isLoggedIn && (
+        <Login setIsLoggedIn={setIsLoggedIn} />
+      )}
+      {isLoggedIn && (
+        <div className="space-x-4">
+          <p className="text-lg mb-6">Your one-stop solution for managing virtual machines and services.</p>
         <Link
           to="/vm/create"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -27,6 +38,7 @@ function HomePage() {
           View Infrastructure
         </Link>
       </div>
+      )}
     </div>
   );
 }
