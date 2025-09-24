@@ -3,7 +3,9 @@ import os
 import json
 import shutil
 from pathlib import Path
-import pyyaml
+import yaml as pyyaml
+import random
+
 
 def convert_GB_to_MB(data):
     """ Convert GB value to MB """
@@ -16,6 +18,33 @@ def convert_GB_to_bytes(data):
 def get_project_root() -> Path:
     """ Returns project root folder """
     return Path(__file__).resolve().parents[1]
+
+
+
+def auto_vars(directory):
+    """
+    To edit the auto.tfvars.json with default variables
+    args : directory : directory where is the client's .tfvars.json file
+    """
+    
+    auto_file = os.path.join(directory, "variables.tf.json")
+    with open(auto_file, 'r') as f:
+        json_file = json.load(f)
+
+    # MAC Random
+    json_file['mac'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)])
+
+    with open(auto_file, 'w') as f:
+        json.dump(json_file, f, indent=2)
+
+#TODO
+def gen_ssh_key():
+    """ Generate an SSH key pair """
+    key_path = os.path.join(os.getcwd(), "id_rsa")
+    subprocess.run(["ssh-keygen", "-t", "rsa", "-b", "2048", "-f", key_path, "-N", ""])
+    with open(f"{key_path}.pub", 'r') as f:
+        public_key = f.read().strip()
+    return public_key
 
 
 
@@ -33,7 +62,8 @@ def update_json(directory, dict_client_data ):
     variables['variable']['disk_size']['default']= convert_GB_to_bytes(dict_client_data['Disk'])
     variables['variable']['ssh-key']['default']= dict_client_data['ssh_key']
     variables['variable']['image_name']['default']= dict_client_data['OS']
-    # TODO : client name + num infra 
+
+    # TODO : client name + num infra (domain_num) + image URL (verif OS before) -> BDD
 
 
     with open(variables_file, 'w') as f:
@@ -50,14 +80,16 @@ def update_yaml(file_path, dict_client_data):
         yaml_data = pyyaml.safe_load(f)
 
     yaml_data['hostname'] = dict_client_data.get('name')
-    yaml_data['users'][0]['home'] = "/home/" + dict_client_data.get('name') # TODO : not name but user login !?
-    yaml_data['users'][0]['name'] = dict_client_data.get('name') # TODO : not name but user login !?
-    # TODO MDP
+    yaml_data['users'][0]['home'] = "/home/" + dict_client_data.get('name') # TODO : not name but user login !? -> BDD
+    yaml_data['users'][0]['name'] = dict_client_data.get('name') # TODO : not name but user login !? -> BDD
+    
     if 'ssh_key' in dict_client_data:
-        yaml_data.setdefault('ssh_authorized_keys', []).append(dict_client_data['ssh_key'])
-        
+        yaml_data['users'][0].setdefault('ssh_authorized_keys', []).append(dict_client_data['ssh_key'])
+    
+    # TODO ERROR WRITING
+    yaml_data['chpasswd']['list'] = 'toto:toto\n' # TODO : GET USER:MDP de User -> BDD
 
-    with open(file_path, 'w') as f:
+    with open(cloud_init_file, 'w') as f:
         pyyaml.dump(yaml_data, f)
 
 
@@ -72,7 +104,7 @@ def update_yaml(file_path, dict_client_data):
         case 'default':
             pass # TODO
 
-    with open(file_path, 'w') as f:
+    with open(network_config_file, 'w') as f:
         pyyaml.dump(yaml_data, f)
 
 def new_infra_client(client_name,num_infra_client, dict_data_client):
@@ -100,7 +132,8 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
 
     
     update_json(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client)
-    #update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client)
+    update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client)
+    auto_vars(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}")
 
 
     print(f"Client '{client_name}' infra {num_infra_client} created successfully.")
@@ -139,9 +172,11 @@ def create_ssh_key():
 if __name__ == "__main__":
     #test
     parent = get_project_root()
-    """ 
-    new_infra_client("client_test",1, {'OS': 'Crotte', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-test'})
-
+     
+    new_infra_client("client_test",1, {'OS': 'Ubuntu', 'Vcpu': '4', 'Memory': '2', 'Disk': '20', 'ssh_key': 'rsa-<key>', 'name': 'myvm1', 'network': 'NAT', 'description': ''})
+    """
     run_infra(parent, "client_test", 1) 
     """
     #destroy_infra(parent, "client_test", 1)
+    """ with open(f"{parent}/tf/templates/cloud_init.yml", "r") as file:
+        print(pyyaml.safe_load(file)) """

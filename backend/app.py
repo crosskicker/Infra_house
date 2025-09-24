@@ -31,6 +31,8 @@ def create_vm():
     data = request.json
     print("Received data:", data)
     # TODO : create in BDD ressources 
+    # TODO : get num_infra_client from BDD
+    # TODO : get client_name from BDD
     # TODO : Call processing functions to create VM
     return jsonify({"message": "VM created", "data": data}), 201
 
