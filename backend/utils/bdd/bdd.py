@@ -38,11 +38,11 @@ def ensure_collections_and_indexes():
     }
     vm_schema = {
         "bsonType": "object",
-        "required": ["userId", "name", "provider", "externalId", "currentState", "createdAt"],
+        "required": ["userId", "name", "os", "externalId", "currentState", "createdAt"],
         "properties": {
             "userId": {"bsonType": "objectId"},
             "name": {"bsonType": "string"},
-            "provider": {"bsonType": "string"},
+            "os": {"bsonType": "string"},
             "externalId": {"bsonType": "string"},
             "currentState": {"enum": ["provisioning","running","stopped","terminated","error"]},
             "createdAt": {"bsonType": "date"}
@@ -77,18 +77,18 @@ def create_user(email: str, password_hash: str) -> ObjectId:
     })
     return res.inserted_id
 
-def upsert_vm(user_id: ObjectId, name:str ,provider: str, external_id: str, num_infra: int,patch: dict):
+def upsert_vm(user_id: ObjectId, name:str ,os: str, external_id: str, num_infra: int,patch: dict):
     """ Crée ou met à jour une VM.
         patch : dict avec les champs à mettre à jour (currentState, metadata, etc.)
         args: user_id : ObjectId de l'utilisateur propriétaire
-        args: provider : str, nom du provider (libvirt, aws, azure, ...)
+        args: os : str, nom du os (libvirt, aws, azure, ...)
         args: external_id : str, ID de la VM
         args: patch : dict, info sur la VM à mettre à jour
         Retourne le document complet après modification.
     """
     now = datetime.now(timezone.utc)
     return db.vms.find_one_and_update(
-        {"userId": user_id, "name": name, "provider": provider, "externalId": external_id, "numero_infra": num_infra},
+        {"userId": user_id, "name": name, "os": os, "externalId": external_id, "numero_infra": num_infra},
         {"$setOnInsert": {"createdAt": now},
          "$set": {"lastSeen": now, **patch}},
         upsert=True, return_document=ReturnDocument.AFTER
@@ -117,6 +117,7 @@ def logging(username: str, password: str) -> bool:
         "passwordHash": password,
         "isActive": True
     })
+    print(user)
     return user is not None
     
 
@@ -138,7 +139,8 @@ if __name__ == "__main__":
     #uid = create_user("toto","toto")
     #print(uid)
 
-    """ lol = logging("toto","toto")
+    lol = logging("toto","toto")
+    """
     print(lol) """
     """  uid = create_user("alice@example.com", "argon2id$...hash...")
     print("UID:", uid)
