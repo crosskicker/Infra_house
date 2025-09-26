@@ -17,25 +17,10 @@ def convert_GB_to_bytes(data):
 
 def get_project_root() -> Path:
     """ Returns project root folder """
-    return Path(__file__).resolve().parents[1]
+    return Path(__file__).resolve().parents[3]
 
 
 
-def auto_vars(directory):
-    """
-    To edit the auto.tfvars.json with default variables
-    args : directory : directory where is the client's .tfvars.json file
-    """
-    
-    auto_file = os.path.join(directory, "variables.tf.json")
-    with open(auto_file, 'r') as f:
-        json_file = json.load(f)
-
-    # MAC Random
-    json_file['mac'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)])
-
-    with open(auto_file, 'w') as f:
-        json.dump(json_file, f, indent=2)
 
 #TODO
 def gen_ssh_key():
@@ -48,7 +33,7 @@ def gen_ssh_key():
 
 
 
-def update_json(directory, dict_client_data ):
+def update_json(directory, dict_client_data, client_name, num_infra_client):
     """
     To edit the variables.tf.json with client's datas
     args : dict_client_data : dictionnary ex : {'OS': 'Ubuntu', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-test'}
@@ -62,14 +47,17 @@ def update_json(directory, dict_client_data ):
     variables['variable']['disk_size']['default']= convert_GB_to_bytes(dict_client_data['Disk'])
     variables['variable']['ssh-key']['default']= dict_client_data['ssh_key']
     variables['variable']['image_name']['default']= dict_client_data['OS']
-
-    # TODO : client name + num infra (domain_num) + image URL (verif OS before) -> BDD
+    variables['variable']['mac']['default'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)]) #MAC random
+    variables['variable']['client_name']['default']= client_name
+    variables['variable']['domain_num']['default']= num_infra_client
 
 
     with open(variables_file, 'w') as f:
         json.dump(variables, f, indent=2)
 
-def update_yaml(file_path, dict_client_data):
+
+
+def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     """
     To edit the cloud_init.yml and network_config.yml with client's datas
     args : dict_client_data : dictionnary ex : {'OS': 'Ubuntu', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-test'}
@@ -79,15 +67,15 @@ def update_yaml(file_path, dict_client_data):
     with open(cloud_init_file, 'r') as f:
         yaml_data = pyyaml.safe_load(f)
 
-    yaml_data['hostname'] = dict_client_data.get('name')
-    yaml_data['users'][0]['home'] = "/home/" + dict_client_data.get('name') # TODO : not name but user login !? -> BDD
-    yaml_data['users'][0]['name'] = dict_client_data.get('name') # TODO : not name but user login !? -> BDD
+    yaml_data['hostname'] = client_name
+    yaml_data['users'][0]['home'] = "/home/" + client_name # TODO : not name but user login !? -> BDD
+    yaml_data['users'][0]['name'] = client_name # TODO : not name but user login !? -> BDD
     
     if 'ssh_key' in dict_client_data:
         yaml_data['users'][0].setdefault('ssh_authorized_keys', []).append(dict_client_data['ssh_key'])
     
     # TODO ERROR WRITING
-    yaml_data['chpasswd']['list'] = 'toto:toto\n' # TODO : GET USER:MDP de User -> BDD
+    #yaml_data['chpasswd']['list'] = 'toto:toto\n' # TODO : GET USER:MDP de User -> BDD
 
     with open(cloud_init_file, 'w') as f:
         pyyaml.dump(yaml_data, f)
@@ -131,9 +119,8 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
         shutil.copy(src_file, dst_file) # Erase if already exists
 
     
-    update_json(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client)
-    update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client)
-    auto_vars(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}")
+    update_json(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client, client_name, num_infra_client)
+    update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client, client_name, num_infra_client)
 
 
     print(f"Client '{client_name}' infra {num_infra_client} created successfully.")
@@ -172,8 +159,9 @@ def create_ssh_key():
 if __name__ == "__main__":
     #test
     parent = get_project_root()
+    print(parent)
      
-    new_infra_client("client_test",1, {'OS': 'Ubuntu', 'Vcpu': '4', 'Memory': '2', 'Disk': '20', 'ssh_key': 'rsa-<key>', 'name': 'myvm1', 'network': 'NAT', 'description': ''})
+    #new_infra_client("client_test",1, {'OS': 'Ubuntu', 'Vcpu': '4', 'Memory': '2', 'Disk': '20', 'ssh_key': 'rsa-<key>', 'name': 'myvm1', 'network': 'NAT', 'description': ''})
     """
     run_infra(parent, "client_test", 1) 
     """

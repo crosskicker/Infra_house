@@ -1,7 +1,7 @@
 /*VERIFIER le type de donnée recup : response => response.results*/
 
 /* import { errorHandlerForm } from "../ErrorHandler/ErrorHandler"; */
-const addr = "http://127.0.0.1:5000"; //todo mettre dans un fichier de config
+const addr = "https://127.0.0.1:5000"; //todo mettre dans un fichier de config
 
 /* FETCH ACTION */
 export function fetchAction(data, url) {

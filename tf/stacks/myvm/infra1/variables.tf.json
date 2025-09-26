@@ -2,11 +2,11 @@
   "variable": {
     "client_name": {
       "type": "string",
-      "default": "prout"
+      "default": "myvm"
     },
     "vcpu": {
       "type": "string",
-      "default": "4"
+      "default": "2"
     },
     "memory": {
       "type": "string",
@@ -14,7 +14,7 @@
     },
     "disk_size": {
       "type": "string",
-      "default": "21474836480"
+      "default": "10737418240"
     },
     "net_mode": {
       "type": "string",
@@ -22,7 +22,7 @@
     },
     "mac": {
       "type": "string",
-      "default": "52:54:00:AA:8C:03"
+      "default": "52:54:00:de:29:25"
     },
     "ssh-key": {
       "type": "string",
@@ -46,12 +46,11 @@
     },
     "domain_num": {
       "type": "string",
-      "default": "001"
+      "default": 1
     },
     "iso_name": {
       "type": "string",
       "default": "unique"
     }
-  },
-  "mac": "52:54:00:10:05:e4"
+  }
 }
