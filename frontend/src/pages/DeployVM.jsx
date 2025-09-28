@@ -8,8 +8,8 @@ function DeployVM() {
   // TODO : recuperer la liste des OS depuis le backend (fetch)
   const [os, setOs] = useState([
     "Other",
-    "Ubuntu",
-    "Debian",
+    "Ubuntu-20",
+    "Debian-13",
     "Fedora",
     "Arch Linux",
   ]); //todo insérer une iso si other

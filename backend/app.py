@@ -22,7 +22,13 @@ CORS(app, supports_credentials=True, origins=["http://localhost:5173"])  # CORS 
 def home():
     return "Hello, World!"
 
-
+@app.route("/api/sign-up", methods=["POST"])
+def sign_up():
+    # todo : add error control
+    data = request.json
+    print("Sign Up attempt:", data)
+    create_user(data.get("username"), data.get("password"))
+    return jsonify({"results": "success"}), 201
 
 @app.route("/api/login", methods=["POST"])
 def login():

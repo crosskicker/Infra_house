@@ -13,5 +13,5 @@ users:
 ssh_pwauth: true
 chpasswd:
   list: |
-     cross:rtlry
+     toto:toto
   expire: False

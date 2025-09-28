@@ -16,6 +16,7 @@ function HomePage() {
       {!isLoggedIn && (
         <Login setIsLoggedIn={setIsLoggedIn} />
       )}
+      
       {isLoggedIn && (
         <div className="space-x-4">
           <p className="text-lg mb-6">Your one-stop solution for managing virtual machines and services.</p>

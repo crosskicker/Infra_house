@@ -3,6 +3,9 @@ import DeployVM from "./pages/DeployVM";
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/login";
 import HomePage from "./pages/HomePage";
+import SignUp from "./pages/signup";
+
+
 
 export const router = createBrowserRouter([
   {
@@ -16,8 +19,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />,
-        
+        element: <HomePage/>,
+      },
+      {
+        path: "/signup",
+        element: <SignUp />,
       },
       {
         path: "/vm/create",

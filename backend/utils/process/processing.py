@@ -19,12 +19,21 @@ def get_project_root() -> Path:
     """ Returns project root folder """
     return Path(__file__).resolve().parents[3]
 
-
-
+def get_os_url(os_name):   
+    """
+    Get the URL of the OS image based on the OS name
+    """
+    os_images = {
+        "Ubuntu-20": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+        "Debian-13": "/var/lib/libvirt/images/debian-13-nocloud-amd64.qcow2",
+    }
+    return os_images.get(os_name, "Error OS")
 
 #TODO
 def gen_ssh_key():
-    """ Generate an SSH key pair """
+    """ Generate an SSH key pair
+     """
+    # TODO : use module cryptography 
     key_path = os.path.join(os.getcwd(), "id_rsa")
     subprocess.run(["ssh-keygen", "-t", "rsa", "-b", "2048", "-f", key_path, "-N", ""])
     with open(f"{key_path}.pub", 'r') as f:
@@ -50,6 +59,7 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
     variables['variable']['mac']['default'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)]) #MAC random
     variables['variable']['client_name']['default']= client_name
     variables['variable']['domain_num']['default']= num_infra_client
+    variables['variable']['image']['default']= get_os_url(dict_client_data['OS'])
 
 
     with open(variables_file, 'w') as f:
@@ -94,6 +104,8 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
 
     with open(network_config_file, 'w') as f:
         pyyaml.dump(yaml_data, f)
+
+
 
 def new_infra_client(client_name,num_infra_client, dict_data_client):
     """
