@@ -4,6 +4,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/login";
 import HomePage from "./pages/HomePage";
 import SignUp from "./pages/signup";
+import InfraView from "./pages/InfraView";
+import VMPage from "./pages/VMPage";
 
 
 
@@ -35,9 +37,13 @@ export const router = createBrowserRouter([
         //element: <ServiceDeployment />,
       },
       {
-        path: "/infrastructure",
-        //element: <InfrastructureTracking />,
+        path: "/infrastructure-view",
+        element: <InfraView />,
         //loader: infrastructureLoader,
+      },
+      {
+        path: "/vm/:id",
+        element: <VMPage />,
       },
     ],
   },
