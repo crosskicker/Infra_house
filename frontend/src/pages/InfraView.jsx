@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function InfraView() {
-  // test
+  // todo : recupérer via le loader
   const vms = [
     { id: "vm-101", name: "Serveur Web", status: "Running" },
     { id: "vm-102", name: "Base de Données", status: "Stopped" },

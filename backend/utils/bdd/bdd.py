@@ -154,6 +154,20 @@ def get_login(user_id: ObjectId) -> str:
     else:
         return None
 
+
+def get_vm_ip(vm_id: ObjectId) -> str:
+    """
+    Get the IP of a VM by its id
+    args vm_id: ObjectId of the VM
+    return: str, IP of the VM
+    """
+    vm = db.vms.find_one({"_id": vm_id})
+    if vm and 'metadata' in vm and 'ip' in vm['metadata']:
+        return vm['metadata']['ip'] #todo : add ip apres démarage de la VM
+    else:
+        return None
+    
+    
 if __name__ == "__main__":
     ensure_collections_and_indexes()
     # Démo

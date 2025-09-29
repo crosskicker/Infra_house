@@ -64,13 +64,7 @@ function Login({ setIsLoggedIn }) {
       >
         Sign Up
       </button>
-      <iframe
-        src="https://on.tty-share.com/s/fIZVpVKEU2eYPumWj0cXX1bNS9Zy8bLc38pg-F3P8lGyEB9fkM01m3RsWpyhXY60suA/"
-        title="Terminal Web"
-        width="100%"
-        height="600"
-        style={{ border: "1px solid #ccc", borderRadius: "8px" }}
-      ></iframe>
+      
     </div>
   );
 }

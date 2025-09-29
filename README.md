@@ -15,3 +15,7 @@ To deploy an infrastrcuture auto via a web interface
 - Modify infra
   - Separate VM ; network
   - Add VM in an infra
+- Permettre une config avancé VM
+  - sous menu de config
+- Mecanisme de logout coté front
+- Gestion des network coté backend

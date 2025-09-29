@@ -22,6 +22,8 @@ CORS(app, supports_credentials=True, origins=["http://localhost:5173"])  # CORS 
 def home():
     return "Hello, World!"
 
+
+
 @app.route("/api/sign-up", methods=["POST"])
 def sign_up():
     # todo : add error control
@@ -30,12 +32,15 @@ def sign_up():
     create_user(data.get("username"), data.get("password"))
     return jsonify({"results": "success"}), 201
 
+
+
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json
     print("Login attempt:", data)
     user = logging(data.get("username"), data.get("password"))
 
+    # todo : faire expirer la session 
     if user:
         print("c'est good")
         session['user_id'] = str(user["_id"])
@@ -59,7 +64,7 @@ def create_vm():
     new_infra_client(data.get("name"), num_infra_client, data)
 
     # Run infrastructure
-    # TODO run_infra(get_project_root(), data.get("name"), num_infra_client) 
+    run_infra(get_project_root(), data.get("name"), num_infra_client) 
 
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}
@@ -77,6 +82,19 @@ def create_vm():
     # TODO : create a loading page while VM is being created
     # TODO : return VM info when ready (ip, user, mdp, ssh key, ...)
     return jsonify({"message": "VM created", "data": data}), 201
+
+
+
+@app.route("/api/start-shell", methods=["POST"])
+def start_shell():
+    data = request.json
+    print("Received data for SSH:", data)
+    id = data.get("vm_id")
+    ip = get_vm_ip(ObjectId(id))
+    command = "tty-share --public"
+    output = run_ssh_command(ip, command)
+    return jsonify({"output": output}), 200
+
 
 if __name__ == "__main__":
     app.run(ssl_context=("localhost+2.pem", "localhost+2-key.pem"),

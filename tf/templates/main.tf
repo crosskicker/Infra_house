@@ -49,8 +49,11 @@ resource "libvirt_domain" "domain" { // must be unique -> VM NAME
 
   cloudinit = libvirt_cloudinit_disk.commoninit.id
 
+  qemu_agent = true
+
   network_interface {
     network_name = var.net_mode
+    wait_for_lease = true // ca attend d'avoir une ip -> si pas en dhcp ca bloque
   }
 
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
@@ -69,7 +72,7 @@ resource "libvirt_domain" "domain" { // must be unique -> VM NAME
   }
 
   disk {
-    volume_id = libvirt_volume.image.id
+    volume_id = libvirt_volume.disk.id // replaced image by disk
   }
 
   graphics {
@@ -77,4 +80,8 @@ resource "libvirt_domain" "domain" { // must be unique -> VM NAME
     listen_type = "address"
     autoport    = true
   }
+}
+
+output "vm_ip" {
+  value = libvirt_domain.domain.network_interface[0].addresses
 }

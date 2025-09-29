@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 import yaml as pyyaml
 import random
+import paramiko
 
 
 def convert_GB_to_MB(data):
@@ -139,7 +140,7 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
 
 
 
-
+# TODO : recuperer l'IP de la VM et l'ajouter dans la BDD
 def run_infra(project_dir, client_name, num_infra):
     """
     Run terraform init and apply in the client's infra directory
@@ -167,7 +168,38 @@ def destroy_infra(project_dir, client_name, num_infra):
 
 def create_ssh_key():
     print("todo create ssh key")
+
+
+
+
+def run_ssh_command(ip,  command, private_key_path = "~/.ssh/id_rsa", username="toto"):
+    """
+    Exécute une commande SSH sur une VM avec clé privée.
+
+    :param ip: adresse IP de la VM
+    :param private_key_path: chemin vers la clé privée (ex: ~/.ssh/id_rsa)
+    :param command: commande shell à exécuter
+    :param username: utilisateur SSH (par défaut "cross")
+    :return: sortie de la commande (stdout, stderr)
+    """
     
+    key = paramiko.RSAKey.from_private_key_file(private_key_path)
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # accepter hostkey auto
+
+    client.connect(ip, username=username, pkey=key)
+
+    stdin, stdout, stderr = client.exec_command(command)
+
+    output = stdout.read().decode()
+    error = stderr.read().decode()
+
+    client.close()
+
+    return output, error
+
+
 if __name__ == "__main__":
     #test
     parent = get_project_root()
