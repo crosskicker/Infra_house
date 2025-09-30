@@ -67,8 +67,9 @@ def create_vm():
     new_infra_client(login_user, num_infra_client, data)
 
     # Run infrastructure
-    run_infra(get_project_root(), login_user, num_infra_client) 
-
+    vm_ip = run_infra(get_project_root(), login_user, num_infra_client) # TODO : recuperer l'IP de la VM et l'ajouter dans la BDD
+    print(vm_ip)
+    print(type(vm_ip))
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}
     name = data.get("name") # VM NAME
@@ -77,6 +78,7 @@ def create_vm():
    
     # Extra fields
     extra_fields = {k: v for k, v in data.items() if k not in wanted_keys}
+
 
     # Insert VM in BDD
     upsert_vm(ObjectId(id), name, os, f"vm-{name}", num_infra_client,

@@ -144,7 +144,15 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
 
     print(f"Client '{client_name}' infra {num_infra_client} created successfully.")
 
-
+def get_vm_ip(path):
+    result = subprocess.run(
+        ["terraform", "output", "-json", "vm_ip"],
+        cwd=path,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    return json.loads(result.stdout)
 
 # TODO : recuperer l'IP de la VM et l'ajouter dans la BDD
 def run_infra(project_dir, client_name, num_infra):
@@ -158,6 +166,8 @@ def run_infra(project_dir, client_name, num_infra):
     infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
     subprocess.run(["terraform", "init"], cwd=infra_dir)
     subprocess.run(["terraform", "apply", "-auto-approve"], cwd=infra_dir)
+    print("Infrastructure deployed successfully.")
+    return get_vm_ip(infra_dir)
 
 
 
@@ -193,7 +203,7 @@ def run_ssh_command(ip,  command, private_key_path = "~/.ssh/id_rsa", username="
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # accepter hostkey auto
-
+    # TODO : change username
     client.connect(ip, username=username, pkey=key)
 
     stdin, stdout, stderr = client.exec_command(command)
@@ -205,6 +215,16 @@ def run_ssh_command(ip,  command, private_key_path = "~/.ssh/id_rsa", username="
 
     return output, error
 
+
+def get_vm_ip(path):
+    result = subprocess.run(
+        ["terraform", "output", "-json", "vm_ip"],
+        cwd=path,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    return json.loads(result.stdout)
 
 if __name__ == "__main__":
     #test

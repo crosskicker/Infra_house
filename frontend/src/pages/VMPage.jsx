@@ -14,7 +14,7 @@ function VMPage() {
   // todo : créer un composant vm info box
 
   async function runShell() {
-    const resp = await fetchData(vm_id, "/api/start-shell");
+    const resp = await fetchData({"vm_id": vm_id}, "/api/start-shell");
     if (resp == "error") {
       console.log(resp);
     } else {

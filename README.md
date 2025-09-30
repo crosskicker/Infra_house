@@ -19,3 +19,9 @@ To deploy an infrastrcuture auto via a web interface
   - sous menu de config
 - Mecanisme de logout coté front
 - Gestion des network coté backend
+
+### TODO GENERAL
+
+- Mettre en place des tests coté backend sur l'edition des fichiers cloud-init et network
+- Gerer les états  systeme lors des changements d'infra
+- Gerer les erreurs systeme  ! bloc try
