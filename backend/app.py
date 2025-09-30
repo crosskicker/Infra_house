@@ -55,16 +55,19 @@ def login():
 def create_vm():
     data = request.json
     print("Received data:", data)
+
+    # login
+    login_user = get_login(ObjectId(session['user_id']))
     
     # num_infra_client from BDD
     num_infra_client = get_num_infra_client(ObjectId(session['user_id'])) + 1
 
     # Create VM ressources with Terraform
     # Then we can add in BDD ressources
-    new_infra_client(data.get("name"), num_infra_client, data)
+    new_infra_client(login_user, num_infra_client, data)
 
     # Run infrastructure
-    run_infra(get_project_root(), data.get("name"), num_infra_client) 
+    run_infra(get_project_root(), login_user, num_infra_client) 
 
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}

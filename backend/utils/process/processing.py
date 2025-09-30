@@ -3,9 +3,11 @@ import os
 import json
 import shutil
 from pathlib import Path
-import yaml as pyyaml
+#import yaml as pyyaml
+from ruamel.yaml import YAML
 import random
 import paramiko
+from ruamel.yaml.scalarstring import LiteralScalarString, DoubleQuotedScalarString
 
 
 def convert_GB_to_MB(data):
@@ -73,29 +75,33 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     To edit the cloud_init.yml and network_config.yml with client's datas
     args : dict_client_data : dictionnary ex : {'OS': 'Ubuntu', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-test'}
     """
+    yaml = YAML()
+    yaml.preserve_quotes = True
     # Cloud init configuration
     cloud_init_file = os.path.join(file_path, "cloud_init.yml")
-    with open(cloud_init_file, 'r') as f:
-        yaml_data = pyyaml.safe_load(f)
+    with open(cloud_init_file, 'r', encoding="utf-8") as f:
+        yaml_data = yaml.load(f)
 
     yaml_data['hostname'] = client_name
     yaml_data['users'][0]['home'] = "/home/" + client_name # TODO : not name but user login !? -> BDD
     yaml_data['users'][0]['name'] = client_name # TODO : not name but user login !? -> BDD
     
-    if 'ssh_key' in dict_client_data:
-        yaml_data['users'][0].setdefault('ssh_authorized_keys', []).append(dict_client_data['ssh_key'])
+    ssh_key_in_place = yaml_data['users'][0]['ssh-authorized-keys'].pop()# to use DoubleQuotedScalarString with the original key
+    yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(ssh_key_in_place))
+    yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(dict_client_data['ssh_key']))
     
     # TODO ERROR WRITING
-    #yaml_data['chpasswd']['list'] = 'toto:toto\n' # TODO : GET USER:MDP de User -> BDD
+    yaml_data['chpasswd']['list'] = LiteralScalarString(f"{client_name}:toto\n")
+    #LiteralScalarString(f"{client_name}:test\n{client_name}:test2\n")
 
-    with open(cloud_init_file, 'w') as f:
-        pyyaml.dump(yaml_data, f)
+    with open(cloud_init_file, 'w', encoding="utf-8") as f:
+        yaml.dump(yaml_data, f)
 
-
+""" 
     # Network configuration
     network_config_file = os.path.join(file_path, "network_config.yml")
-    with open(network_config_file, 'r') as f:
-        yaml_data = pyyaml.safe_load(f)
+    with open(network_config_file, 'r', encoding="utf-8") as f:
+        yaml_data = yaml.load(f)
 
     match dict_client_data.get('Network'):
         case 'bridge':
@@ -103,8 +109,8 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
         case 'default':
             pass # TODO
 
-    with open(network_config_file, 'w') as f:
-        pyyaml.dump(yaml_data, f)
+    with open(network_config_file, 'w', encoding="utf-8") as f:
+        yaml.dump(yaml_data, f) """
 
 
 
@@ -212,3 +218,6 @@ if __name__ == "__main__":
     #destroy_infra(parent, "client_test", 1)
     """ with open(f"{parent}/tf/templates/cloud_init.yml", "r") as file:
         print(pyyaml.safe_load(file)) """
+    
+    #new_infra_client("client_test",2, {'OS': 'Ubuntu-20', 'Vcpu': '4', 'Memory': '2', 'Disk': '20', 'ssh_key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyvX6pX5Wn5y7k0vV9xYqz8+7b1gYh+Kk3jH9mXlGk6mZzF3xX5F5mXlGk6mZzF3xX5F5mXlG', 'name': 'myvm2', 'Network': 'bridge', 'description': ''})
+    

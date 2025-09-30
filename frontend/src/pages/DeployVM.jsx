@@ -20,12 +20,7 @@ function DeployVM() {
   const [network, setNetwork] = useState(["NAT", "bridge"]); // TODO : liste des réseaux en dur
   const [description, setDescription] = useState(""); // TODO : description optionnelle
 
-  // Pour soumettre le formulaire
-  //import { useSubmit } from "react-router-dom";
-  //import { useForm, Controller } from "react-hook-form";
-
-  // For Action with react-router-dom
-  //const submit = useSubmit();
+ // todo : Add a banner to show that the VM is deployed
 
   const {
     register,
@@ -40,7 +35,7 @@ function DeployVM() {
       Vcpu: "",
       Memory: "",
       Disk: "",
-      ssh_key: "rsa-<key>", //TODO file or text area ?!
+      ssh_key: "ssh-rsa AAAA", //TODO file or text area ?!
       name: "myvm", // TODO : 1 UNIQUE name per VM
       network: "default", // TODO : liste des réseaux en dur
       description : "", // TODO : description optionnelle
