@@ -1,6 +1,7 @@
 import { fetchData } from "../fetch";
 import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button"
 
 function VMPage() {
   const [ttyShareUrl, setTtyShareUrl] = useState(
@@ -58,9 +59,9 @@ function VMPage() {
           <p>Chargement de la VM...</p>
         )}
       </div>
-      <button onClick={runShell}>Run a shell</button>
-      <button>Stop the shell</button>
-      <button onClick={stopVM}>Stop the VM</button>
+      <Button onClick={runShell}>Run a shell</Button>
+      <Button>Stop the shell</Button>
+      <Button onClick={stopVM}>Stop the VM</Button>
       <iframe
         src={ttyShareUrl}
         title="Terminal Web"

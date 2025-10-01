@@ -67,9 +67,9 @@ def create_vm():
     new_infra_client(login_user, num_infra_client, data)
 
     # Run infrastructure
-    vm_ip = run_infra(get_project_root(), login_user, num_infra_client) # TODO : recuperer l'IP de la VM et l'ajouter dans la BDD
+    vm_ip = run_infra(get_project_root(), login_user, num_infra_client)
     print(vm_ip)
-    print(type(vm_ip))
+    
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}
     name = data.get("name") # VM NAME
@@ -78,6 +78,7 @@ def create_vm():
    
     # Extra fields
     extra_fields = {k: v for k, v in data.items() if k not in wanted_keys}
+    extra_fields["ip"] = vm_ip[0] if vm_ip else ""  # Add IP to metadata
 
 
     # Insert VM in BDD
@@ -97,9 +98,25 @@ def start_shell():
     id = data.get("vm_id")
     ip = get_vm_ip(ObjectId(id))
     command = "tty-share --public"
-    output = run_ssh_command(ip, command)
-    return jsonify({"output": output}), 200
+    output, err = run_ssh_command(ip, command)
+    print("SSH Command Output:", output)
+    print("SSH Command Error:", err)
+    return jsonify({"results": output}), 200
 
+
+
+@app.route("/api/vms-info", methods=["GET"])
+def vms_info():
+    # toutes les vms d'un user
+    id = session.get('user_id')
+    vms_info =get_user_vms(ObjectId(id)) # list of dicts
+    return jsonify({"results": vms_info}), 200
+
+
+# TODO : Endpoint to destroy ressources
+    # - destroy infra with terraform destroy
+    # - update BDD
+    # destroy dir (sys)
 
 if __name__ == "__main__":
     app.run(ssl_context=("localhost+2.pem", "localhost+2-key.pem"),

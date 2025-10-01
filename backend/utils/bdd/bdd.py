@@ -167,7 +167,23 @@ def get_vm_ip(vm_id: ObjectId) -> str:
     else:
         return None
     
-    
+
+
+def get_user_vms(user_id: ObjectId):
+    """
+    Get all VMs of a user by its id
+    args user_id: ObjectId of the user
+    return: list of VMs
+    """
+    vms = list(db.vms.find({"userId": user_id}))
+    for vm in vms:
+        for key in vm:
+            if isinstance(vm[key], ObjectId):
+                vm[key] = str(vm[key])  # Convert ObjectId to string for JSON serialization
+            elif isinstance(vm[key], datetime):
+                vm[key] = vm[key].isoformat()  # Convert datetime to ISO format string
+    return vms
+
 if __name__ == "__main__":
     ensure_collections_and_indexes()
     # Démo
@@ -194,3 +210,6 @@ if __name__ == "__main__":
     vm = upsert_vm(uid, "myvm", "libvirt", "vm-001", 1,
                    {"currentState": "running", "metadata": {"vcpu": 2, "ramMB": 4096}})
     """
+    get_user_vms(lol["_id"])
+
+    # [{'_id': ObjectId('68dbceadd106bd77a3e4847a'), 'name': 'myvm', 'userId': ObjectId('68d2cd46e0547a05f3370468'), 'os': 'Ubuntu-20', 'externalId': 'vm-myvm', 'numero_infra': 1, 'createdAt': datetime.datetime(2025, 9, 30, 12, 35, 57, 751000), 'currentState': 'provisioning', 'lastSeen': datetime.datetime(2025, 9, 30, 12, 35, 57, 751000), 'metadata': {'OS': 'Ubuntu-20', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'network': 'NAT', 'description': ''}}]

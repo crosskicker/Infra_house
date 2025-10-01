@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import SignUp from "./pages/signup";
 import InfraView from "./pages/InfraView";
 import VMPage from "./pages/VMPage";
+import { infrastructureLoader } from "./loader";
 
 
 
@@ -39,7 +40,7 @@ export const router = createBrowserRouter([
       {
         path: "/infrastructure-view",
         element: <InfraView />,
-        //loader: infrastructureLoader,
+        loader: infrastructureLoader ,
       },
       {
         path: "/vm/:id",
