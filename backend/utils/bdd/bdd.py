@@ -155,7 +155,7 @@ def get_login(user_id: ObjectId) -> str:
         return None
 
 
-def get_vm_ip(vm_id: ObjectId) -> str:
+def get_vm_ip_bdd(vm_id: ObjectId) -> str:
     """
     Get the IP of a VM by its id
     args vm_id: ObjectId of the VM

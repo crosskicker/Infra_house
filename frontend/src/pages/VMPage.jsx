@@ -1,21 +1,22 @@
 import { fetchData } from "../fetch";
 import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 function VMPage() {
   const [ttyShareUrl, setTtyShareUrl] = useState(
-    "https://blog.stephane-robert.info/docs/developper/autres-langages/yaml/"
+    "https://on.tty-share.com/s/bzbXSujX09LiRDZFjo9G6cHfq4TRPSQil05f1Bigh3-MhH5itdeMHZYlXgIJ6nfGZtw/"
   );
 
   const { vm_id } = useParams(); // récupère l'id de l'URL
   const location = useLocation();
   const [vm, setVm] = useState(location.state?.vm);
-
-  // todo : créer un composant vm info box
+  const { _id, name, currentState, metadata } = vm;
 
   async function runShell() {
-    const resp = await fetchData({"vm_id": vm_id}, "/api/start-shell");
+    console.log("Starting shell for VM ID:", vm_id);
+    const resp = await fetchData({ vm_id: vm_id }, "/api/start-shell");
     if (resp == "error") {
       console.log(resp);
     } else {
@@ -30,43 +31,83 @@ function VMPage() {
       console.log(resp);
     } else {
       console.log(resp);
-      setTtyShareUrl("None");
+      setTtyShareUrl(resp);
     }
   }
 
-  useEffect(() => {
-    if (!vm) {
-      // si pas d’objet en state, on refetch depuis le backend
-      console.log("Fetching VM info for ID:", vm_id);
-      fetchData(vm_id, "/api/vm-info").then((data) => setVm(data));
-    }
-  }, [vm, vm_id]);
-
   return (
     <>
-      <h1>VM Page</h1>
-      <p>This is the virtual machine page.</p>
-      {/*     todo : vm info box
-       */}{" "}
-      <div>
+      <div className="flex m-8  ">
+        <h1 className="text-xl font-semibold text-gray-800">{name}</h1>
+      </div>
+
+      <div className=" ">
         {vm ? (
-          <>
-            <h1>{vm.name}</h1>
-            <p>Status: {vm.status}</p>
-            <p>ID: {vm.id}</p>
-          </>
+          <Card className="w-full max-w-md mx-auto rounded-2xl shadow-lg hover:shadow-xl transition-shadow mb-4 ml-8">
+            <CardContent className="p-4">
+              {/* Titre */}
+              <div className="flex items-start  justify-between mb-2">
+                <h2 className="text-xl font-semibold text-gray-800">{name}</h2>
+                <span
+                  className={`px-2 py-1 text-sm rounded-full ${
+                    currentState === "running"
+                      ? "bg-green-100 text-green-700"
+                      : currentState === "provisioning"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {currentState}
+                </span>
+              </div>
+
+              {/* Métadonnées */}
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>
+                  <span className="font-medium">OS:</span> {metadata?.OS}
+                </p>
+                <p>
+                  <span className="font-medium">vCPU:</span> {metadata?.Vcpu}
+                </p>
+                <p>
+                  <span className="font-medium">RAM:</span> {metadata?.Memory}{" "}
+                  GB
+                </p>
+                <p>
+                  <span className="font-medium">Disque:</span> {metadata?.Disk}{" "}
+                  GB
+                </p>
+                <p>
+                  <span className="font-medium">Réseau:</span>{" "}
+                  {metadata?.network}
+                </p>
+                <p>
+                  <span className="font-medium">IP:</span>{" "}
+                  {metadata?.ip || "N/A"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         ) : (
           <p>Chargement de la VM...</p>
         )}
       </div>
-      <Button onClick={runShell}>Run a shell</Button>
-      <Button>Stop the shell</Button>
-      <Button onClick={stopVM}>Stop the VM</Button>
+      <div className="flex space-x-4 mb-4">
+        <Button onClick={runShell} className="bg-blue-600 hover:bg-blue-500  ">
+          Run a shell
+        </Button>
+        <Button className="bg-blue-600 hover:bg-blue-500  ">
+          Stop the shell
+        </Button>
+        <Button onClick={stopVM} className="bg-blue-600 hover:bg-blue-500  ">
+          Stop the VM
+        </Button>
+      </div>
       <iframe
         src={ttyShareUrl}
         title="Terminal Web"
-        width="100%"
-        height="600"
+        width=" 550px "
+        height="220px"
         style={{ border: "1px solid #ccc", borderRadius: "8px" }}
       ></iframe>
     </>

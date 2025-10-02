@@ -96,8 +96,8 @@ def start_shell():
     data = request.json
     print("Received data for SSH:", data)
     id = data.get("vm_id")
-    ip = get_vm_ip(ObjectId(id))
-    command = "tty-share --public"
+    ip = get_vm_ip_bdd(ObjectId(id))
+    command = "sudo /usr/local/bin/tty-share --public"
     output, err = run_ssh_command(ip, command)
     print("SSH Command Output:", output)
     print("SSH Command Error:", err)

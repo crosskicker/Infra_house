@@ -8,6 +8,8 @@ from ruamel.yaml import YAML
 import random
 import paramiko
 from ruamel.yaml.scalarstring import LiteralScalarString, DoubleQuotedScalarString
+import threading
+import time
 
 
 def convert_GB_to_MB(data):
@@ -188,7 +190,7 @@ def create_ssh_key():
 
 
 
-def run_ssh_command(ip,  command, private_key_path = "~/.ssh/id_rsa", username="toto"):
+def run_ssh_command(ip,  command, username="toto"):
     """
     Exécute une commande SSH sur une VM avec clé privée.
 
@@ -198,22 +200,56 @@ def run_ssh_command(ip,  command, private_key_path = "~/.ssh/id_rsa", username="
     :param username: utilisateur SSH (par défaut "cross")
     :return: sortie de la commande (stdout, stderr)
     """
-    
+    project_dir = get_project_root()
+    private_key_path = os.path.join(project_dir, "backend/ssh/id_rsa")
     key = paramiko.RSAKey.from_private_key_file(private_key_path)
+    print("Using private key:", private_key_path)
+    print("Connecting to:", ip)
+    print("Using username:", username)
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # accepter hostkey auto
     # TODO : change username
     client.connect(ip, username=username, pkey=key)
 
-    stdin, stdout, stderr = client.exec_command(command)
+    # ouvrir une session avec un pseudo-terminal (PTY obligatoire pour tty-share)
+    transport = client.get_transport()
+    channel = transport.open_session()
+    channel.get_pty()
+    channel.exec_command(command)
 
-    output = stdout.read().decode()
-    error = stderr.read().decode()
+    url_container = {"url": None}  # stockage temporaire
 
-    client.close()
+    def reader():
+        while True:
+            if channel.recv_ready():
+                chunk = channel.recv(4096).decode("utf-8", errors="ignore")
+                print("[TTY-SHARE OUT]", chunk.strip())
+                if "https" in chunk and url_container["url"] is None:
+                    for word in chunk.split():
+                        if word.startswith("https"):
+                            url_container["url"] = word
+                            print("[URL FOUND]", word)
+            if channel.recv_stderr_ready():
+                chunk = channel.recv_stderr(4096).decode("utf-8", errors="ignore")
+                print("[TTY-SHARE ERR]", chunk.strip())
+            if channel.exit_status_ready():
+                break
 
-    return output, error
+    t = threading.Thread(target=reader, daemon=True)
+    t.start()
+
+    timeout = 10  # secondes
+    waited = 0
+    while url_container["url"] is None and waited < timeout:
+        time.sleep(0.2)
+        waited += 0.2
+
+    if url_container["url"] is None:
+        raise TimeoutError("Aucune URL tty-share détectée dans le délai imparti.")
+
+    # retourne le client et le channel pour les garder vivants
+    return url_container["url"] , None
 
 
 def get_vm_ip(path):

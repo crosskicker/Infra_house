@@ -50,7 +50,7 @@
     },
     "iso_name": {
       "type": "string",
-      "default": "uniquee"
+      "default": "uniqueee"
     }
   }
 }

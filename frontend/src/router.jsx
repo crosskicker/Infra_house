@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
         loader: infrastructureLoader ,
       },
       {
-        path: "/vm/:id",
+        path: "/vm/:vm_id",
         element: <VMPage />,
       },
     ],
