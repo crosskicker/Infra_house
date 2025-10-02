@@ -7,3 +7,6 @@ localhost+2.pem
 # venv
 .venv/
 venv/
+
+#ssh
+ssh/

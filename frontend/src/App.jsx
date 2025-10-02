@@ -7,6 +7,7 @@ import { useForm, Controller } from "react-hook-form";
 import { fetchData } from './fetch'
 import DeployVM from './pages/DeployVM'
 import { Outlet } from 'react-router'
+import NavigationBar from './components/NavigationBar'
 
 function App() {
 
@@ -20,6 +21,8 @@ function App() {
 
 
 
+
+
 async function mySubmit(values) {
   console.log("Données à envoyer :", values);
   const response = await fetchData(values, "/api/create-vm");
@@ -28,8 +31,9 @@ async function mySubmit(values) {
   return (
     
     
-    <div className="flex h-full">
-      <div className="w-64 flex-shrink-0">
+    <div className="flex   ">
+      <div className="w-64 h-screen flex-shrink-0 ">
+        <NavigationBar user={{ name: "toto", email: "cross@example.com" }}  />
         {/* <Navigation /> */}
         {/* <DeployVM /> */}
         <p>Menu de navigation</p>
