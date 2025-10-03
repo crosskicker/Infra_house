@@ -147,16 +147,21 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
     print(f"Client '{client_name}' infra {num_infra_client} created successfully.")
 
 def get_vm_ip(path):
-    result = subprocess.run(
-        ["terraform", "output", "-json", "vm_ip"],
-        cwd=path,
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    return json.loads(result.stdout)
+    try:
+        result = subprocess.run(
+            ["terraform", "output", "-json", "vm_ip"],
+            cwd=path,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return json.loads(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("Error occurred while getting VM IP, get_vm_ip function:", e)
+        return None
+    
 
-# TODO : recuperer l'IP de la VM et l'ajouter dans la BDD
+
 def run_infra(project_dir, client_name, num_infra):
     """
     Run terraform init and apply in the client's infra directory
@@ -166,10 +171,16 @@ def run_infra(project_dir, client_name, num_infra):
     return: None
     """
     infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
-    subprocess.run(["terraform", "init"], cwd=infra_dir)
-    subprocess.run(["terraform", "apply", "-auto-approve"], cwd=infra_dir)
-    print("Infrastructure deployed successfully.")
-    return get_vm_ip(infra_dir)
+    try:
+        subprocess.run(["terraform", "init"], cwd=infra_dir, check=True)
+        subprocess.run(["terraform", "apply", "-auto-approve"], cwd=infra_dir, check=True)
+        print("Infrastructure deployed successfully.")
+        return get_vm_ip(infra_dir)
+    except subprocess.CalledProcessError as e:
+        print("Error occurred while deploying infrastructure:", e)
+        res = subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, capture_output=True)
+        print("Auto destruction for the infra ", res.stdout)
+        return None
 
 
 
@@ -182,7 +193,10 @@ def destroy_infra(project_dir, client_name, num_infra):
     return: None
     """
     infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
-    subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir)
+    try:
+        subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, check=True)
+    except subprocess.CalledProcessError as e:
+        print("Error occurred while destroying infrastructure:", e)
 
 def create_ssh_key():
     print("todo create ssh key")

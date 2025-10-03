@@ -113,10 +113,34 @@ def vms_info():
     return jsonify({"results": vms_info}), 200
 
 
-# TODO : Endpoint to destroy ressources
-    # - destroy infra with terraform destroy
-    # - update BDD
-    # destroy dir (sys)
+
+@app.route("/api/destroy-vm", methods=["POST"])
+def destroy_vm():
+    data = request.json
+    print("Received data for destroy:", data)
+    vm_id = data.get("vm_id")
+
+    try:
+
+        # Get user login
+        login_user = get_login(ObjectId(session['user_id']))
+
+        # Get l'infra de la vm pour détruire le dossier
+        infra_num = get_num_infra_vm(ObjectId(vm_id))
+        
+        # detruire l'infra terraform
+        destroy_infra(get_project_root(), login_user, infra_num)
+
+        # Remove VM from BDD
+        delete_vm_bdd(vm_id)
+    
+
+        return jsonify({"results": "VM destroyed"}), 200
+    
+    except Exception as e:
+        print("Error occurred while destroying VM:", e)
+        return jsonify({"results": "error : VM is not destroyed", "message": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(ssl_context=("localhost+2.pem", "localhost+2-key.pem"),

@@ -25,3 +25,4 @@ To deploy an infrastrcuture auto via a web interface
 - Mettre en place des tests coté backend sur l'edition des fichiers cloud-init et network
 - Gerer les états  systeme lors des changements d'infra
 - <b> !!!! Gerer les erreurs systeme  ! bloc try !!!! </b>
+- Générer des logs pour les différentes activités via logging module

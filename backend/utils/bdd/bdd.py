@@ -142,6 +142,19 @@ def get_num_infra_client(user_id: ObjectId) -> int:
 
 
 
+def get_num_infra_vm(vm_id: ObjectId) -> int:
+    """
+    Get the number of infrastructure for a given VM
+    args vm_id: ObjectId of the VM
+    return: int, number of infrastructure
+    """
+    vm = db.vms.find_one({"_id": vm_id})
+    if vm and 'numero_infra' in vm:
+        return vm['numero_infra']
+    else:
+        return None
+
+
 def get_login(user_id: ObjectId) -> str:
     """
     Get the login of a user by its id
@@ -153,6 +166,7 @@ def get_login(user_id: ObjectId) -> str:
         return user['email']
     else:
         return None
+
 
 
 def get_vm_ip_bdd(vm_id: ObjectId) -> str:
@@ -183,6 +197,16 @@ def get_user_vms(user_id: ObjectId):
             elif isinstance(vm[key], datetime):
                 vm[key] = vm[key].isoformat()  # Convert datetime to ISO format string
     return vms
+
+
+
+def delete_vm_bdd(vm_id: ObjectId):
+    """
+    Delete a VM by its id
+    args vm_id: ObjectId of the VM
+    return: None
+    """
+    db.vms.delete_one({"_id": vm_id})
 
 if __name__ == "__main__":
     ensure_collections_and_indexes()
