@@ -19,6 +19,9 @@ To deploy an infrastrcuture auto via a web interface
   - sous menu de config
 - Mecanisme de logout coté front
 - Gestion des network coté backend
+  - gerer les differents réseau nat
+    - ne pas créer deux fois le meme
+    - permetrre de se connecter a un NAT existant ?
 
 ### TODO GENERAL
 

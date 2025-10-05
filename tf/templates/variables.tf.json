@@ -51,6 +51,10 @@
     "iso_name": {
       "type": "string",
       "default": "uniqueee"
+    },
+    "network_mode": {
+      "type": "string",
+      "default": "default"
     }
   }
 }

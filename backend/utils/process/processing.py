@@ -53,24 +53,36 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
     args : dict_client_data : dictionnary ex : {'OS': 'Ubuntu', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-test'}
     """
     variables_file = os.path.join(directory, "variables.tf.json")
-    with open(variables_file, 'r') as f:
-        variables = json.load(f)
+    try:
+        with open(variables_file, 'r') as f:
+            variables = json.load(f)
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"❌ Erreur accès fichier {variables_file} :", e)
+    except json.JSONDecodeError as e:
+        print("❌ JSON invalide:", e)
+    except Exception as e:
+        print("❌ Erreur inattendue:", e)
 
-    variables['variable']['vcpu']['default']= dict_client_data['Vcpu']
-    variables['variable']['memory']['default']= convert_GB_to_MB(dict_client_data['Memory'])
-    variables['variable']['disk_size']['default']= convert_GB_to_bytes(dict_client_data['Disk'])
-    variables['variable']['ssh-key']['default']= dict_client_data['ssh_key']
-    variables['variable']['image_name']['default']= dict_client_data['OS']
-    variables['variable']['mac']['default'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)]) #MAC random
-    variables['variable']['client_name']['default']= client_name
-    variables['variable']['domain_num']['default']= num_infra_client
-    variables['variable']['image']['default']= get_os_url(dict_client_data['OS'])
+    if variables:
+        variables['variable']['vcpu']['default']= dict_client_data['Vcpu']
+        variables['variable']['memory']['default']= convert_GB_to_MB(dict_client_data['Memory'])
+        variables['variable']['disk_size']['default']= convert_GB_to_bytes(dict_client_data['Disk'])
+        variables['variable']['ssh-key']['default']= dict_client_data['ssh_key']
+        variables['variable']['image_name']['default']= dict_client_data['OS']
+        variables['variable']['mac']['default'] = "52:54:00:" + ":".join([f"{random.randint(0, 255):02x}" for _ in range(3)]) #MAC random
+        variables['variable']['client_name']['default']= client_name
+        variables['variable']['domain_num']['default']= num_infra_client
+        variables['variable']['image']['default']= get_os_url(dict_client_data['OS'])
 
-
-    with open(variables_file, 'w') as f:
-        json.dump(variables, f, indent=2)
-
-
+    try:
+        with open(variables_file, 'w') as f:
+            json.dump(variables, f, indent=2)
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"❌ Erreur accès fichier {variables_file} :", e)
+    except json.JSONDecodeError as e:
+        print("❌ JSON invalide:", e)
+    except Exception as e:
+        print("❌ Erreur inattendue:", e)
 
 def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     """
@@ -81,23 +93,38 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     yaml.preserve_quotes = True
     # Cloud init configuration
     cloud_init_file = os.path.join(file_path, "cloud_init.yml")
-    with open(cloud_init_file, 'r', encoding="utf-8") as f:
-        yaml_data = yaml.load(f)
+    try:
+        with open(cloud_init_file, 'r', encoding="utf-8") as f:
+            yaml_data = yaml.load(f)
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"❌ Erreur accès fichier {cloud_init_file} :", e)
+    except yaml.YAMLError as e:
+        print("❌ YAML invalide:", e)
+    except Exception as e:
+        print("❌ Erreur inattendue:", e)
 
-    yaml_data['hostname'] = client_name
-    yaml_data['users'][0]['home'] = "/home/" + client_name # TODO : not name but user login !? -> BDD
-    yaml_data['users'][0]['name'] = client_name # TODO : not name but user login !? -> BDD
-    
-    ssh_key_in_place = yaml_data['users'][0]['ssh-authorized-keys'].pop()# to use DoubleQuotedScalarString with the original key
-    yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(ssh_key_in_place))
-    yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(dict_client_data['ssh_key']))
+    if yaml_data:
+        yaml_data['hostname'] = client_name
+        yaml_data['users'][0]['home'] = "/home/" + client_name # TODO : not name but user login !? -> BDD
+        yaml_data['users'][0]['name'] = client_name # TODO : not name but user login !? -> BDD
+
+        ssh_key_in_place = yaml_data['users'][0]['ssh-authorized-keys'].pop()# to use DoubleQuotedScalarString with the original key
+        yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(ssh_key_in_place))
+        yaml_data['users'][0]['ssh-authorized-keys'].append(DoubleQuotedScalarString(dict_client_data['ssh_key']))
     
     # TODO ERROR WRITING
-    yaml_data['chpasswd']['list'] = LiteralScalarString(f"{client_name}:toto\n")
+        yaml_data['chpasswd']['list'] = LiteralScalarString(f"{client_name}:toto\n")
     #LiteralScalarString(f"{client_name}:test\n{client_name}:test2\n")
 
-    with open(cloud_init_file, 'w', encoding="utf-8") as f:
-        yaml.dump(yaml_data, f)
+    try:
+        with open(cloud_init_file, 'w', encoding="utf-8") as f:
+            yaml.dump(yaml_data, f)
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"❌ Erreur accès fichier {cloud_init_file} :", e)
+    except yaml.YAMLError as e:
+        print("❌ YAML invalide:", e)
+    except Exception as e:
+        print("❌ Erreur inattendue:", e)
 
 """ 
     # Network configuration
@@ -240,6 +267,7 @@ def run_ssh_command(ip,  command, username="toto"):
                 chunk = channel.recv(4096).decode("utf-8", errors="ignore")
                 print("[TTY-SHARE OUT]", chunk.strip())
                 if "https" in chunk and url_container["url"] is None:
+                    channel.send("\n") # pour lancer le tty-share
                     for word in chunk.split():
                         if word.startswith("https"):
                             url_container["url"] = word

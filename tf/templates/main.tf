@@ -41,6 +41,37 @@ resource "libvirt_cloudinit_disk" "commoninit" {
   //pool           = libvirt_pool.ubuntu.name
 }
 
+
+# Si réseau NAT à créer
+resource "libvirt_network" "nat_network" {
+  count     = var.network_mode == "nat" ? 1 : 0
+  name      = "net-${var.vm_name}-nat" # TODO : nom unique !
+  mode      = "nat"
+  addresses = ["192.168.${100 + count.index}.0/24"] # TODO : Plage d'adresse unique !
+
+  dhcp {
+    enabled = true
+  }
+
+  autostart = true
+}
+
+# Si réseau isolé à créer
+resource "libvirt_network" "isolated_network" {
+  count     = var.network_mode == "isolated" ? 1 : 0
+  name      = "net-${var.vm_name}-isolated" # TODO : nom unique !
+  mode      = "isolated"
+  addresses = ["10.${100 + count.index}.0.0/24"]  # TODO : Plage d'adresse unique !
+
+
+  dhcp {
+    enabled = true
+  }
+
+  autostart = true
+}
+
+
 # Create the machine
 resource "libvirt_domain" "domain" { // must be unique -> VM NAME
   name   = "${var.client_name}-${var.image_name}-${var.domain_num}"
@@ -51,9 +82,15 @@ resource "libvirt_domain" "domain" { // must be unique -> VM NAME
 
   qemu_agent = true
 
-  network_interface {
-    network_name = var.net_mode
-    wait_for_lease = true // ca attend d'avoir une ip -> si pas en dhcp ca bloque
+network_interface {
+    network_name = (
+      var.network_mode == "default" ? "default" :
+      var.network_mode == "bridge" ? "br0" : # bridge impossible sur interface wireless .....
+      var.network_mode == "nat" ? libvirt_network.nat_network[0].name :
+      var.network_mode == "isolated" ? libvirt_network.isolated_network[0].name :
+      "default"
+    )
+    wait_for_lease = true
   }
 
   # IMPORTANT: this is a known bug on cloud images, since they expect a console

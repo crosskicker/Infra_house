@@ -120,6 +120,8 @@ def destroy_vm():
     print("Received data for destroy:", data)
     vm_id = data.get("vm_id")
 
+    # TODO : le traitements des erreurs doit se faire dans chaque fonction
+    # et pas ici
     try:
 
         # Get user login
@@ -132,8 +134,8 @@ def destroy_vm():
         destroy_infra(get_project_root(), login_user, infra_num)
 
         # Remove VM from BDD
-        delete_vm_bdd(vm_id)
-    
+        delete_vm_bdd(ObjectId(vm_id))
+
 
         return jsonify({"results": "VM destroyed"}), 200
     

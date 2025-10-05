@@ -12,7 +12,7 @@ function VMPage() {
   const { vm_id } = useParams(); // récupère l'id de l'URL
   const location = useLocation();
   const [vm, setVm] = useState(location.state?.vm);
-  const { _id, name, currentState, metadata } = vm;
+  const { /* _id, */ name, currentState, metadata } = vm;
 
   async function runShell() {
     console.log("Starting shell for VM ID:", vm_id);
@@ -25,8 +25,8 @@ function VMPage() {
     }
   }
 
-  async function stopVM() {
-    const resp = await fetchData(vm_id, "/api/stop-vm");
+  async function destroyVM() {
+    const resp = await fetchData({ vm_id: vm_id }, "/api/destroy-vm");
     if (resp == "error") {
       console.log(resp);
     } else {
@@ -99,8 +99,8 @@ function VMPage() {
         <Button className="bg-blue-600 hover:bg-blue-500  ">
           Stop the shell
         </Button>
-        <Button onClick={stopVM} className="bg-blue-600 hover:bg-blue-500  ">
-          Stop the VM
+        <Button onClick={destroyVM} className="bg-blue-600 hover:bg-blue-500  ">
+          Destroy the VM
         </Button>
       </div>
       <iframe
