@@ -3,8 +3,10 @@ import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { useNavigate } from "react-router-dom";
 function VMPage() {
+/*TODO : recuperer les infos de la VMs depuis la BDD  
+  TODO : recuperer l'id de la VM depuis l'URL */
   const [ttyShareUrl, setTtyShareUrl] = useState(
     "https://on.tty-share.com/s/bzbXSujX09LiRDZFjo9G6cHfq4TRPSQil05f1Bigh3-MhH5itdeMHZYlXgIJ6nfGZtw/"
   );
@@ -13,7 +15,10 @@ function VMPage() {
   const location = useLocation();
   const [vm, setVm] = useState(location.state?.vm);
   const { /* _id, */ name, currentState, metadata } = vm;
+  const nav = useNavigate();
 
+
+  // Gérer les erreurs de fetch coté front et back 
   async function runShell() {
     console.log("Starting shell for VM ID:", vm_id);
     const resp = await fetchData({ vm_id: vm_id }, "/api/start-shell");
@@ -28,10 +33,13 @@ function VMPage() {
   async function destroyVM() {
     const resp = await fetchData({ vm_id: vm_id }, "/api/destroy-vm");
     if (resp == "error") {
+      
       console.log(resp);
+      //todo : display un msg d'erreur
     } else {
       console.log(resp);
-      setTtyShareUrl(resp);
+      nav("/infrastructure-view");
+      
     }
   }
 

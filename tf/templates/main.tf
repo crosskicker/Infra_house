@@ -45,7 +45,7 @@ resource "libvirt_cloudinit_disk" "commoninit" {
 # Si réseau NAT à créer
 resource "libvirt_network" "nat_network" {
   count     = var.network_mode == "nat" ? 1 : 0
-  name      = "net-${var.vm_name}-nat" # TODO : nom unique !
+  name      = "net-${var.iso_name}-nat" # TODO : nom unique !
   mode      = "nat"
   addresses = ["192.168.${100 + count.index}.0/24"] # TODO : Plage d'adresse unique !
 
@@ -59,7 +59,7 @@ resource "libvirt_network" "nat_network" {
 # Si réseau isolé à créer
 resource "libvirt_network" "isolated_network" {
   count     = var.network_mode == "isolated" ? 1 : 0
-  name      = "net-${var.vm_name}-isolated" # TODO : nom unique !
+  name      = "net-${var.iso_name}-isolated" # TODO : nom unique !
   mode      = "isolated"
   addresses = ["10.${100 + count.index}.0.0/24"]  # TODO : Plage d'adresse unique !
 

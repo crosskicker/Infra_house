@@ -17,7 +17,7 @@ function DeployVM() {
   const [Memory, setMemory] = useState(["1", "2", "4", "8", "16"]);
   const [Disk, setDisk] = useState(["10", "20", "50", "100"]);
   const [name, setName] = useState("myvm"); // TODO : 1 UNIQUE name per VM
-  const [network, setNetwork] = useState(["NAT", "bridge"]); // TODO : liste des réseaux en dur
+  const [Network, setNetwork] = useState(["NAT", "bridge","default"]); // TODO : liste des réseaux en dur
   const [description, setDescription] = useState(""); // TODO : description optionnelle
 
  // todo : Add a banner to show that the VM is deployed
@@ -37,7 +37,7 @@ function DeployVM() {
       Disk: "",
       ssh_key: "ssh-rsa AAAA", //TODO file or text area ?!
       name: "myvm", // TODO : 1 UNIQUE name per VM
-      network: "default", // TODO : liste des réseaux en dur
+      Network: "default", // TODO : liste des réseaux en dur
       description : "", // TODO : description optionnelle
     },
   });
@@ -149,18 +149,18 @@ function DeployVM() {
         <div className="flex w-72  justify-between">
           <label className="">Network </label>
           <Controller
-            name="network"
+            name="Network"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
               <SelectList
                 {...field}
-                tab={network}
+                tab={Network}
                 onChange={(selectedOption) => {
                   field.onChange(selectedOption.value); // ← injecte la valeur dans react-hook-form
                   //fetchCountryList(selectedOption.value); // ← appelle ta fonction fetch
                 }}
-                id="network"
+                id="Network"
               />
             )}
           />

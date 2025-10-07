@@ -6,6 +6,8 @@ from pymongo import MongoClient, ReturnDocument, ASCENDING
 from bson import ObjectId
 from pymongo.errors import CollectionInvalid, OperationFailure
 
+from utils.exception.exception import DatabaseError
+
 load_dotenv()
 
 MONGO_URL = os.environ["MONGO_URL"]           # Atlas SRV URL
@@ -148,11 +150,14 @@ def get_num_infra_vm(vm_id: ObjectId) -> int:
     args vm_id: ObjectId of the VM
     return: int, number of infrastructure
     """
-    vm = db.vms.find_one({"_id": vm_id})
-    if vm and 'numero_infra' in vm:
-        return vm['numero_infra']
-    else:
-        return None
+    try:
+        vm = db.vms.find_one({"_id": vm_id})
+        if vm and 'numero_infra' in vm:
+            return vm['numero_infra']
+        else:
+            return None # lever une erreur car pas d'infra existante
+    except Exception as e:
+        raise DatabaseError(f"Error fetching VM infrastructure number: {e}")
 
 
 def get_login(user_id: ObjectId) -> str:
@@ -161,11 +166,15 @@ def get_login(user_id: ObjectId) -> str:
     args user_id: ObjectId of the user
     return: str, login of the user
     """
-    user = db.users.find_one({"_id": user_id})
-    if user:
-        return user['email']
-    else:
-        return None
+    try:
+        user = db.users.find_one({"_id": user_id})
+        if user:
+            return user['email']
+        else:
+            return None
+    except Exception as e:
+        raise DatabaseError(f"Error fetching user login: {e}")
+        
 
 
 

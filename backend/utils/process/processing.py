@@ -47,6 +47,45 @@ def gen_ssh_key():
 
 
 
+# TODO : Laisser l'utilisateur détaillé la config réseau
+def generate_network_config(network_mode, dir, ip=None, gateway=None, dns=None):
+    """ Generate a network configuration file in YAML format
+    args network_mode: "nat", "bridge", "isolated", "default"
+    args dir: directory to save the file
+    args ip: IP address for isolated mode
+    args gateway: Gateway for isolated mode
+    args dns: DNS for isolated mode
+    """
+    yaml = YAML()
+    yaml.preserve_quotes = True
+    config = {"version": 2, "ethernets": {"ens3": {}}}
+    ens3 = config["ethernets"]["ens3"]
+
+    if network_mode in ("nat", "default"):
+        ens3["dhcp4"] = True
+        # TODO : generer un reseau nat différent necessite une range ip !
+    elif network_mode == "bridge":
+        ens3["dhcp4"] = True  # ou False si tu veux statique
+    elif network_mode == "isolated":
+        ens3["dhcp4"] = False
+        ens3["addresses"] = [f"{ip}/24"]
+        ens3["gateway4"] = gateway
+        ens3["nameservers"] = {"addresses": [dns]}
+
+    filename = os.path.join(dir, "network_config.yml")
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            yaml.dump(config, f)
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"❌ Erreur accès fichier {filename} :", e)
+    except yaml.YAMLError as e:
+        print("❌ YAML invalide:", e)
+    except Exception as e:
+        print("❌ Erreur inattendue:", e)
+
+
+
+
 def update_json(directory, dict_client_data, client_name, num_infra_client):
     """
     To edit the variables.tf.json with client's datas
@@ -73,6 +112,8 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
         variables['variable']['client_name']['default']= client_name
         variables['variable']['domain_num']['default']= num_infra_client
         variables['variable']['image']['default']= get_os_url(dict_client_data['OS'])
+        variables['variable']['network_mode']['default']= dict_client_data['Network'].lower() # nat, bridge, isolated, default
+        variables['variable']['iso_name']['default']= dict_client_data['name']+"-"+ client_name
 
     try:
         with open(variables_file, 'w') as f:
@@ -83,6 +124,8 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
         print("❌ JSON invalide:", e)
     except Exception as e:
         print("❌ Erreur inattendue:", e)
+
+
 
 def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     """
@@ -126,22 +169,13 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
     except Exception as e:
         print("❌ Erreur inattendue:", e)
 
-""" 
+    # TODO : Laisser l'utilisateur détaillé la config réseau
     # Network configuration
-    network_config_file = os.path.join(file_path, "network_config.yml")
-    with open(network_config_file, 'r', encoding="utf-8") as f:
-        yaml_data = yaml.load(f)
-
-    match dict_client_data.get('Network'):
-        case 'bridge':
-            yaml_data['ethernets']['eth0']['dhcp4'] = True
-        case 'default':
-            pass # TODO
-
-    with open(network_config_file, 'w', encoding="utf-8") as f:
-        yaml.dump(yaml_data, f) """
+    generate_network_config(dict_client_data['Network'], file_path)
 
 
+
+   
 
 def new_infra_client(client_name,num_infra_client, dict_data_client):
     """
@@ -171,63 +205,7 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
     update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client, client_name, num_infra_client)
 
 
-    print(f"Client '{client_name}' infra {num_infra_client} created successfully.")
-
-def get_vm_ip(path):
-    try:
-        result = subprocess.run(
-            ["terraform", "output", "-json", "vm_ip"],
-            cwd=path,
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        return json.loads(result.stdout)
-    except subprocess.CalledProcessError as e:
-        print("Error occurred while getting VM IP, get_vm_ip function:", e)
-        return None
-    
-
-
-def run_infra(project_dir, client_name, num_infra):
-    """
-    Run terraform init and apply in the client's infra directory
-    args: project_dir : root project directory
-    args: client_name : name of the client
-    args: num_infra : number of the infra
-    return: None
-    """
-    infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
-    try:
-        subprocess.run(["terraform", "init"], cwd=infra_dir, check=True)
-        subprocess.run(["terraform", "apply", "-auto-approve"], cwd=infra_dir, check=True)
-        print("Infrastructure deployed successfully.")
-        return get_vm_ip(infra_dir)
-    except subprocess.CalledProcessError as e:
-        print("Error occurred while deploying infrastructure:", e)
-        res = subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, capture_output=True)
-        print("Auto destruction for the infra ", res.stdout)
-        return None
-
-
-
-def destroy_infra(project_dir, client_name, num_infra):
-    """
-    Destroy the infrastructure using terraform destroy
-    args: project_dir : root project directory
-    args: client_name : name of the client
-    args: num_infra : number of the infra
-    return: None
-    """
-    infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
-    try:
-        subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, check=True)
-    except subprocess.CalledProcessError as e:
-        print("Error occurred while destroying infrastructure:", e)
-
-def create_ssh_key():
-    print("todo create ssh key")
-
+    print(f"Client '{client_name}' infra {num_infra_client} directories created successfully.")
 
 
 

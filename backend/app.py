@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import os
 from utils.bdd.bdd import *
 from utils.process.processing import *
+from utils.infrastrcuture.infrastructure import *
+from utils.exception.exception import *
 
 load_dotenv()
 
@@ -18,9 +20,14 @@ app.config["SESSION_COOKIE_SECURE"] = True # Only over HTTPS
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])  # CORS enabled for flask
 
 
-@app.route("/")
-def home():
-    return "Hello, World!"
+ 
+@app.errorhandler(AppError)
+def handle_app_error(e):
+    """Handle custom application errors.
+    Return a JSON response with the error message and a 400 status code.
+    """
+    return jsonify({"error": str(e)}), 400
+
 
 
 
@@ -69,6 +76,10 @@ def create_vm():
     # Run infrastructure
     vm_ip = run_infra(get_project_root(), login_user, num_infra_client)
     print(vm_ip)
+
+    # TODO : avec les try catch pour gérer les erreurs
+        # si on a un probleme ca continue alors il faut que ca continue mais comme il faut !!!  
+              # on ne vas pas ajouter dans la BDD si l'infra ne s'est pas lancer, on ne va pas non plus renvoyé code 201 au serveur
     
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}
@@ -83,7 +94,7 @@ def create_vm():
 
     # Insert VM in BDD
     upsert_vm(ObjectId(id), name, os, f"vm-{name}", num_infra_client,
-              {"currentState": "provisioning", "metadata": extra_fields}) # TODO : external id is useless 
+              {"currentState": "running", "metadata": extra_fields}) # TODO : external id is useless 
         
     # TODO : create a loading page while VM is being created
     # TODO : return VM info when ready (ip, user, mdp, ssh key, ...)
@@ -120,28 +131,22 @@ def destroy_vm():
     print("Received data for destroy:", data)
     vm_id = data.get("vm_id")
 
-    # TODO : le traitements des erreurs doit se faire dans chaque fonction
-    # et pas ici
-    try:
+    # Get user login
+    login_user = get_login(ObjectId(session['user_id']))
 
-        # Get user login
-        login_user = get_login(ObjectId(session['user_id']))
-
-        # Get l'infra de la vm pour détruire le dossier
-        infra_num = get_num_infra_vm(ObjectId(vm_id))
-        
-        # detruire l'infra terraform
-        destroy_infra(get_project_root(), login_user, infra_num)
-
-        # Remove VM from BDD
-        delete_vm_bdd(ObjectId(vm_id))
-
-
-        return jsonify({"results": "VM destroyed"}), 200
+    # Get l'infra de la vm pour détruire le dossier
+    infra_num = get_num_infra_vm(ObjectId(vm_id))
     
-    except Exception as e:
-        print("Error occurred while destroying VM:", e)
-        return jsonify({"results": "error : VM is not destroyed", "message": str(e)}), 500
+    # detruire l'infra terraform
+    destroy_infra(get_project_root(), login_user, infra_num)
+
+    # TODO : Detruire le directory ( seulement si la destruction terraform a fonctionné correctement )
+
+    # Remove VM from BDD
+    delete_vm_bdd(ObjectId(vm_id))
+
+    return jsonify({"results": "VM destroyed"}), 200
+
 
 
 if __name__ == "__main__":
