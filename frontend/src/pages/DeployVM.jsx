@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import SelectList from "../components/SelectList";
 import { fetchData } from "../fetch";
+import { Input } from "@/components/ui/input"
 
 function DeployVM() {
   // TODO : recuperer la liste des OS depuis le backend (fetch)

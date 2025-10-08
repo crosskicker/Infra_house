@@ -1,12 +1,13 @@
 import { fetchData } from "../fetch";
 import { useParams, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+
+
 function VMPage() {
-/*TODO : recuperer les infos de la VMs depuis la BDD  
-  TODO : recuperer l'id de la VM depuis l'URL */
+/*TODO : Ne pas  oublier d'appeler getInfoVM() si on change les données de la VM */
   const [ttyShareUrl, setTtyShareUrl] = useState(
     "https://on.tty-share.com/s/bzbXSujX09LiRDZFjo9G6cHfq4TRPSQil05f1Bigh3-MhH5itdeMHZYlXgIJ6nfGZtw/"
   );
@@ -27,6 +28,7 @@ function VMPage() {
     } else {
       console.log(resp);
       setTtyShareUrl(resp);
+      getInfoVM();
     }
   }
 
@@ -42,6 +44,25 @@ function VMPage() {
       
     }
   }
+
+  async function getInfoVM(){
+    const resp = await fetchData({ vm_id: vm_id }, "/api/get-vm-info");
+    if (resp == "error") {
+      
+      console.log(resp);
+      
+    } else {
+      console.log(resp);
+      setVm(resp);
+    }
+  }
+
+  // refresh l'état de la VM à chaque changement des données de la VM
+  useEffect(() => { 
+
+    console.log(" useEffect changer les données de la VM")
+
+  }, [vm_id]);
 
   return (
     <>

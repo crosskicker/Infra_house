@@ -209,6 +209,24 @@ def get_user_vms(user_id: ObjectId):
 
 
 
+def get_vm_info(vm_id: ObjectId):
+    """
+    Get information of a VM by its id
+    args vm_id: ObjectId of the VM
+    return: dict, information of the VM
+    """
+    vm = db.vms.find_one({"_id": vm_id})
+    if vm:
+        for key in vm:
+            if isinstance(vm[key], ObjectId):
+                vm[key] = str(vm[key])  # Convert ObjectId to string for JSON serialization
+            elif isinstance(vm[key], datetime):
+                vm[key] = vm[key].isoformat()  # Convert datetime to ISO format string
+        return vm
+    else:
+        return None
+
+
 def delete_vm_bdd(vm_id: ObjectId):
     """
     Delete a VM by its id

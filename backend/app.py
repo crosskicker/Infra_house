@@ -124,6 +124,14 @@ def vms_info():
     return jsonify({"results": vms_info}), 200
 
 
+@app.route("/api/vm-info", methods=["POST"])
+def vm_info():
+    data = request.json
+    print("Received data for VM info:", data)
+    vm_id = data.get("vm_id")
+    vm_info = get_vm_info(ObjectId(vm_id))
+    return jsonify({"results": vm_info}), 200
+
 
 @app.route("/api/destroy-vm", methods=["POST"])
 def destroy_vm():
