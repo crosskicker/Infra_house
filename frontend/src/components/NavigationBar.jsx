@@ -49,18 +49,22 @@ function NavigationBar({ user = null }) {
   const location = useLocation();
 
   return (
-    <aside className="h-full w-64 bg-surface border-r border-slate-200 dark:border-slate-800 flex flex-col">
+    <aside className="h-full w-64 bg-surface border-r border-slate-200 dark:border-slate-800 flex flex-col bg-gray-50">
       {/* Top area: logo / title */}
       <div className="px-4 py-4 flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
-            X
-          </div>
+          <Link to="/">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
+              X
+            </div>
+          </Link>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">Crossland</span>
-            <span className="text-xs text-muted-foreground">
-              Infrastructure
-            </span>
+            <Link to="/">
+              <div className="text-sm font-semibold">Crossland</div>
+              <div className="text-xs text-muted-foreground">
+                Infrastructure
+              </div>
+            </Link>
           </div>
         </div>
       </div>

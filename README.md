@@ -25,7 +25,16 @@ To deploy an infrastrcuture auto via a web interface
 
 ### TODO GENERAL
 
-- Mettre en place des tests coté backend sur l'edition des fichiers cloud-init et network
+
+-
+- ISOLER LES VMS
+
+  - un réseau nat par VM
+  - ameliorer la config reseau pour le user
 - Gerer les états  systeme lors des changements d'infra
-- <b> !!!! Gerer les erreurs systeme  ! bloc try !!!! </b>
-- Générer des logs pour les différentes activités via logging module
+- <b>Gérer le monitoring des ressources</b>
+- Générer des logs pour les différentes activités via logging module !!!!
+- Gérer les erreurs front et back !!!!!!!!!
+-
+-
+-

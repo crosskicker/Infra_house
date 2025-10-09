@@ -13,6 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+
+// TODO : Implementer le reset bouton
+// TODO : redirect apres le deploiement operationnel ( vers Infra ) 
 function DeployVM() {
   const [os] = useState([
     "Other",
@@ -46,11 +49,11 @@ function DeployVM() {
 
   return (
     <div className="flex flex-col items-center pl-0 h-full">
-      <h1 className="text-2xl font-bold pt-12 pl-6 self-start">Déployer VM</h1>
+      <h1 className="text-2xl font-bold pt-12 pl-6 self-start">VM Deployment</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(mySubmit)}
-          className="flex flex-col items-center  flex-auto space-y-6  self-start pl-6 pr-6 pt-16 pb-12  w-full h-full "
+          className="flex flex-col items-center  flex-auto space-y-6  self-start pl-6 pr-16 pt-16 pb-12  w-full h-full "
         >
           {/* Ligne 1 : Name + Description */}
           <div className="flex flex-wrap gap-6 h-[20%] w-full self-start  ">
@@ -229,7 +232,7 @@ function DeployVM() {
             disabled={form.formState.isSubmitting}
             className="w-96"
           >
-            {form.formState.isSubmitting ? "Building..." : "Build"}
+            {form.formState.isSubmitting ? "Deploying..." : "Deploy"}
           </Button>
           <Button
           className="w-96"
