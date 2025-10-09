@@ -29,16 +29,16 @@ async function mySubmit(values) {
 }
 
   return (
-    
-    
-    <div className="flex   ">
+
+
+    <div className="flex  h-screen w-full ">
       <div className="w-64 h-screen flex-shrink-0 ">
         <NavigationBar user={{ name: "toto", email: "cross@example.com" }}  />
         {/* <Navigation /> */}
         {/* <DeployVM /> */}
-        <p>Menu de navigation</p>
+        
       </div>
-      <main className="flex-1">
+      <main className="flex-1 h-screen">
         <Outlet />
       </main>
     </div>

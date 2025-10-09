@@ -45,20 +45,21 @@ function DeployVM() {
   }
 
   return (
-    <div className="flex flex-col items-center pl-0 ">
+    <div className="flex flex-col items-center pl-0 h-full">
+      <h1 className="text-2xl font-bold pt-12 pl-6 self-start">Déployer VM</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(mySubmit)}
-          className="flex flex-col items-center justify-around flex-auto space-y-6  self-start pl-6 pt-6 w-full"
+          className="flex flex-col items-center  flex-auto space-y-6  self-start pl-6 pr-6 pt-16 pb-12  w-full h-full "
         >
-          {/* Ligne  : Name + Description */}
-          <div className="flex flex-wrap justify-around  gap-6 w-full self-start ">
+          {/* Ligne 1 : Name + Description */}
+          <div className="flex flex-wrap gap-6 h-[20%] w-full self-start  ">
             {/* VM Name */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="w-72">
+                <FormItem className="w-[48%] ">
                   <FormLabel>VM name</FormLabel>
                   <FormControl>
                     <Input placeholder="Nom de la VM" {...field} />
@@ -73,13 +74,13 @@ function DeployVM() {
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem className="w-72">
+                <FormItem className="w-[48%] ">
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Description"
                       {...field}
-                      className="min-h-[80px]"
+                      className="min-h-[40px]"
                     />
                   </FormControl>
                   <FormMessage />
@@ -88,13 +89,13 @@ function DeployVM() {
             />
           </div>
           {/* Ligne 2 : vCPU, Memory, Disk */}
-          <div className="flex flex-wrap justify-around gap-6 self-start w-full">
+          <div className="flex flex-wrap gap-6 h-[20%] self-start w-full">
             {/* vCPU */}
             <FormField
               control={form.control}
               name="Vcpu"
               render={({ field }) => (
-                <FormItem className="w-48">
+                <FormItem className="w-[31%]">
                   <FormLabel>vCPU</FormLabel>
                   <FormControl>
                     <SelectList
@@ -103,6 +104,7 @@ function DeployVM() {
                       onChange={(selectedOption) =>
                         field.onChange(selectedOption.value)
                       }
+                      className=" rounded-lg"
                     />
                   </FormControl>
                   <FormMessage />
@@ -115,7 +117,7 @@ function DeployVM() {
               control={form.control}
               name="Memory"
               render={({ field }) => (
-                <FormItem className="w-48">
+                <FormItem className="w-[31%]">
                   <FormLabel>Memory</FormLabel>
                   <FormControl>
                     <SelectList
@@ -136,7 +138,7 @@ function DeployVM() {
               control={form.control}
               name="Disk"
               render={({ field }) => (
-                <FormItem className="w-48">
+                <FormItem className="w-[31%] b">
                   <FormLabel>Disk</FormLabel>
                   <FormControl>
                     <SelectList
@@ -154,19 +156,19 @@ function DeployVM() {
           </div>
 
           {/* Ligne 3 : OS + Network */}
-          <div className="flex flex-wrap justify-around gap-6 self-start w-full">
+          <div className="flex flex-wrap  gap-6 h-[20%] self-start w-full">
             {/* OS */}
             <FormField
               control={form.control}
               name="OS"
               render={({ field }) => (
-                <FormItem className="w-72">
+                <FormItem className="w-[48%]">
                   <FormLabel>OS</FormLabel>
                   <FormControl>
                     <SelectList
                       {...field}
                       tab={os}
-                      className="w-64 rounded-lg"
+                      
                       onChange={(selectedOption) =>
                         field.onChange(selectedOption.value)
                       }
@@ -182,7 +184,7 @@ function DeployVM() {
               control={form.control}
               name="Network"
               render={({ field }) => (
-                <FormItem className="w-72">
+                <FormItem className="w-[48%]">
                   <FormLabel>Network</FormLabel>
                   <FormControl>
                     <SelectList
@@ -200,12 +202,12 @@ function DeployVM() {
           </div>
 
           {/* Ligne 4 : SSH Key */}
-          <div className="flex self-start w-full">
+          <div className="flex self-start h-[20%] w-full">
             <FormField
               control={form.control}
               name="ssh_key"
               render={({ field }) => (
-                <FormItem className="w-96">
+                <FormItem className="w-[100%]">
                   <FormLabel>SSH Key</FormLabel>
                   <FormControl>
                     <Input
@@ -221,13 +223,21 @@ function DeployVM() {
           </div>
 
           {/* Bouton Submit */}
+          <div className="flex self-start w-full">
           <Button
             type="submit"
             disabled={form.formState.isSubmitting}
-            className="w-72"
+            className="w-96"
           >
-            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+            {form.formState.isSubmitting ? "Building..." : "Build"}
           </Button>
+          <Button
+          className="w-96"
+          variant="secondary"
+          >
+            Reset
+          </Button>
+          </div>
         </form>
       </Form>
     </div>
