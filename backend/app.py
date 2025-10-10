@@ -5,10 +5,33 @@ import redis """
 from flask_caching import Cache
 from dotenv import load_dotenv
 import os
+import logging
 from utils.bdd.bdd import *
 from utils.process.processing import *
 from utils.infrastrcuture.infrastructure import *
 from utils.exception.exception import *
+
+
+# TODO : ajouter un filtre pour avoir le pseudo user
+
+# Logger setup
+# TODO : Ajouter un logger par module (fichier)
+logger_app = logging.getLogger("app")
+logger_app.setLevel(logging.DEBUG)
+
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler("./logs/app.log")
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+logger_app.addHandler(console_handler)
+logger_app.addHandler(file_handler)
 
 load_dotenv()
 
@@ -37,6 +60,7 @@ def sign_up():
     data = request.json
     print("Sign Up attempt:", data)
     create_user(data.get("username"), data.get("password"))
+    logger_app.info(f"New user created: {data.get('username')}")
     return jsonify({"results": "success"}), 201
 
 
@@ -45,13 +69,12 @@ def sign_up():
 def login():
     data = request.json
     print("Login attempt:", data)
-    user = logging(data.get("username"), data.get("password"))
+    user = logging_user(data.get("username"), data.get("password"))
 
     # todo : faire expirer la session 
     if user:
-        print("c'est good")
+        logger_app.info(f"User logged in: {data.get('username')}")
         session['user_id'] = str(user["_id"])
-        print(session['user_id'])  
         return jsonify({"results": "success"}), 200
     else:
         return jsonify({"results": "error"}), 401

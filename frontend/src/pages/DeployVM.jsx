@@ -9,13 +9,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-
 // TODO : Implementer le reset bouton
-// TODO : redirect apres le deploiement operationnel ( vers Infra ) 
+// TODO : redirect apres le deploiement operationnel ( vers Infra )
 function DeployVM() {
   const [os] = useState([
     "Other",
@@ -49,7 +49,9 @@ function DeployVM() {
 
   return (
     <div className="flex flex-col items-center pl-0 h-full">
-      <h1 className="text-2xl font-bold pt-12 pl-6 self-start">VM Deployment</h1>
+      <h1 className="text-2xl font-bold pt-12 pl-6 self-start">
+        VM Deployment
+      </h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(mySubmit)}
@@ -171,12 +173,14 @@ function DeployVM() {
                     <SelectList
                       {...field}
                       tab={os}
-                      
                       onChange={(selectedOption) =>
                         field.onChange(selectedOption.value)
                       }
                     />
                   </FormControl>
+                  <FormDescription>
+                    OS images are pulled from official source
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -198,6 +202,9 @@ function DeployVM() {
                       }
                     />
                   </FormControl>
+                  <FormDescription>
+                    "default" is the Nated network already existent
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -227,19 +234,16 @@ function DeployVM() {
 
           {/* Bouton Submit */}
           <div className="flex self-start w-full">
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            className="w-96"
-          >
-            {form.formState.isSubmitting ? "Deploying..." : "Deploy"}
-          </Button>
-          <Button
-          className="w-96"
-          variant="secondary"
-          >
-            Reset
-          </Button>
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="w-96"
+            >
+              {form.formState.isSubmitting ? "Deploying..." : "Deploy"}
+            </Button>
+            <Button className="w-96" variant="secondary">
+              Reset
+            </Button>
           </div>
         </form>
       </Form>

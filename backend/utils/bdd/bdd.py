@@ -119,7 +119,7 @@ def user_with_vms(email: str):
     ]
     return list(db.users.aggregate(pipeline))[0]
 
-def logging(username: str, password: str) -> bool:
+def logging_user(username: str, password: str) -> bool:
     """
     Check if user exists with given username and password
     Useful for login
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     #uid = create_user("toto","toto")
     #print(uid)
 
-    lol = logging("toto","toto")
+    lol = logging_user("toto","toto")
     """
     print(lol) """
     """  uid = create_user("alice@example.com", "argon2id$...hash...")
