@@ -8,6 +8,23 @@ from pymongo.errors import CollectionInvalid, OperationFailure
 
 from utils.exception.exception import DatabaseError
 
+import logging
+
+logger_bdd = logging.getLogger("process")
+logger_bdd.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler("./logs/bdd.log")
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+logger_bdd.addHandler(file_handler)
+logger_bdd.addHandler(console_handler)
+
 load_dotenv()
 
 MONGO_URL = os.environ["MONGO_URL"]           # Atlas SRV URL
@@ -75,13 +92,20 @@ def create_user(email: str, password_hash: str) -> ObjectId:
         Lève DuplicateKeyError si email déjà utilisé.
     """
     now = datetime.now(timezone.utc)
-    res = db.users.insert_one({
-        "email": email,
-        "passwordHash": password_hash,  # Argon2id/bcrypt côté app
-        "isActive": True,
-        "createdAt": now
-    })
-    return res.inserted_id
+    try:
+        res = db.users.insert_one({
+            "email": email,
+            "passwordHash": password_hash,  # Argon2id/bcrypt côté app
+            "isActive": True,
+            "createdAt": now
+        })
+        logger_bdd.info(f"User created with pseudo: {email}, id: {res.inserted_id}")
+        return res.inserted_id
+    except Exception as e:
+        logger_bdd.error(f"Error occurred while creating user: {e}")
+        raise DatabaseError(f"Error creating user: {e}")
+
+    
 
 
 
@@ -95,6 +119,7 @@ def upsert_vm(user_id: ObjectId, name:str ,os: str, external_id: str, num_infra:
         Retourne le document complet après modification.
     """
     now = datetime.now(timezone.utc)
+
     return db.vms.find_one_and_update(
         {"userId": user_id, "name": name, "os": os, "externalId": external_id, "numero_infra": num_infra},
         {"$setOnInsert": {"createdAt": now},

@@ -33,6 +33,8 @@ file_handler.setFormatter(formatter)
 logger_app.addHandler(console_handler)
 logger_app.addHandler(file_handler)
 
+
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -47,9 +49,10 @@ CORS(app, supports_credentials=True, origins=["http://localhost:5173"])  # CORS 
 @app.errorhandler(AppError)
 def handle_app_error(e):
     """Handle custom application errors.
-    Return a JSON response with the error message and a 400 status code.
+    Return a JSON response with the error message and a 500 status code.
     """
-    return jsonify({"error": str(e)}), 400
+    logger_app.error(f"Application error ; serveur respond with 500 error : {e}")
+    return jsonify({"error": str(e)}), 500
 
 
 
@@ -58,7 +61,6 @@ def handle_app_error(e):
 def sign_up():
     # todo : add error control
     data = request.json
-    print("Sign Up attempt:", data)
     create_user(data.get("username"), data.get("password"))
     logger_app.info(f"New user created: {data.get('username')}")
     return jsonify({"results": "success"}), 201
@@ -68,7 +70,7 @@ def sign_up():
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json
-    print("Login attempt:", data)
+    logger_app.info(f"Login attempt for user: {data.get('username')}")
     user = logging_user(data.get("username"), data.get("password"))
 
     # todo : faire expirer la session 
@@ -84,7 +86,7 @@ def login():
 @app.route("/api/create-vm", methods=["POST"])
 def create_vm():
     data = request.json
-    print("Received data:", data)
+    logger_app.info(f"Create VM request data: {data}")
 
     # login
     login_user = get_login(ObjectId(session['user_id']))
@@ -98,11 +100,9 @@ def create_vm():
 
     # Run infrastructure
     vm_ip = run_infra(get_project_root(), login_user, num_infra_client)
-    print(vm_ip)
+    logger_app.debug(f"VM IP after creation: {vm_ip}")
 
-    # TODO : avec les try catch pour gérer les erreurs
-        # si on a un probleme ca continue alors il faut que ca continue mais comme il faut !!!  
-              # on ne vas pas ajouter dans la BDD si l'infra ne s'est pas lancer, on ne va pas non plus renvoyé code 201 au serveur
+    
     
     # Add a VM datas in BDD ressources 
     wanted_keys = {"name", "os"}
@@ -128,13 +128,13 @@ def create_vm():
 @app.route("/api/start-shell", methods=["POST"])
 def start_shell():
     data = request.json
-    print("Received data for SSH:", data)
+    logger_app.info(f"Received data for start shell: {data}")
     id = data.get("vm_id")
     ip = get_vm_ip_bdd(ObjectId(id))
     command = "sudo /usr/local/bin/tty-share --public"
     output, err = run_ssh_command(ip, command)
-    print("SSH Command Output:", output)
-    print("SSH Command Error:", err)
+    logger_app.debug(f"SSH Command Output: {output}")
+    logger_app.error(f"SSH Command Error for start shell: {err}")
     return jsonify({"results": output}), 200
 
 
@@ -150,7 +150,7 @@ def vms_info():
 @app.route("/api/vm-info", methods=["POST"])
 def vm_info():
     data = request.json
-    print("Received data for VM info:", data)
+    logger_app.debug(f"Received data for VM info: {data}")
     vm_id = data.get("vm_id")
     vm_info = get_vm_info(ObjectId(vm_id))
     return jsonify({"results": vm_info}), 200
@@ -159,7 +159,7 @@ def vm_info():
 @app.route("/api/destroy-vm", methods=["POST"])
 def destroy_vm():
     data = request.json
-    print("Received data for destroy:", data)
+    logger_app.info(f"Received data for destroy vm: {data}")
     vm_id = data.get("vm_id")
 
     # Get user login

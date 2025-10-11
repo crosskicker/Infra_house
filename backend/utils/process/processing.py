@@ -11,6 +11,22 @@ from ruamel.yaml.scalarstring import LiteralScalarString, DoubleQuotedScalarStri
 import threading
 import time
 
+import logging
+
+logger_process = logging.getLogger("process")
+logger_process.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler("./logs/process.log")
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+logger_process.addHandler(file_handler)
+logger_process.addHandler(console_handler)
 
 def convert_GB_to_MB(data):
     """ Convert GB value to MB """
@@ -32,7 +48,11 @@ def get_os_url(os_name):
         "Ubuntu-20": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
         "Debian-13": "/var/lib/libvirt/images/debian-13-nocloud-amd64.qcow2",
     }
-    return os_images.get(os_name, "Error OS")
+    try :
+        return os_images[os_name]
+    except KeyError:
+        logger_process.error(f"OS name '{os_name}' not found. Available OS: {list(os_images.keys())}")
+        return None
 
 #TODO
 def gen_ssh_key():
@@ -77,11 +97,12 @@ def generate_network_config(network_mode, dir, ip=None, gateway=None, dns=None):
         with open(filename, "w", encoding="utf-8") as f:
             yaml.dump(config, f)
     except (FileNotFoundError, PermissionError) as e:
-        print(f"❌ Erreur accès fichier {filename} :", e)
+        logger_process.error(f"Erreur accès fichier {filename} :", e)
     except yaml.YAMLError as e:
-        print("❌ YAML invalide:", e)
+        logger_process.error(f"YAML invalide: {e}")
     except Exception as e:
-        print("❌ Erreur inattendue:", e)
+        logger_process.error(f"Erreur inattendue: {e}")
+
 
 
 
@@ -96,11 +117,11 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
         with open(variables_file, 'r') as f:
             variables = json.load(f)
     except (FileNotFoundError, PermissionError) as e:
-        print(f"❌ Erreur accès fichier {variables_file} :", e)
+        logger_process.error(f"Erreur accès fichier {variables_file} :", e)
     except json.JSONDecodeError as e:
-        print("❌ JSON invalide:", e)
+        logger_process.error(f"JSON invalide: {e}")
     except Exception as e:
-        print("❌ Erreur inattendue:", e)
+        logger_process.error(f"Erreur inattendue: {e}")
 
     if variables:
         variables['variable']['vcpu']['default']= dict_client_data['Vcpu']
@@ -119,11 +140,11 @@ def update_json(directory, dict_client_data, client_name, num_infra_client):
         with open(variables_file, 'w') as f:
             json.dump(variables, f, indent=2)
     except (FileNotFoundError, PermissionError) as e:
-        print(f"❌ Erreur accès fichier {variables_file} :", e)
+        logger_process.error(f"Erreur accès fichier {variables_file} :", e)
     except json.JSONDecodeError as e:
-        print("❌ JSON invalide:", e)
+        logger_process.error(f"JSON invalide: {e}")
     except Exception as e:
-        print("❌ Erreur inattendue:", e)
+        logger_process.error(f"Erreur inattendue: {e}")
 
 
 
@@ -140,11 +161,11 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
         with open(cloud_init_file, 'r', encoding="utf-8") as f:
             yaml_data = yaml.load(f)
     except (FileNotFoundError, PermissionError) as e:
-        print(f"❌ Erreur accès fichier {cloud_init_file} :", e)
+        logger_process.error(f"Erreur accès fichier {cloud_init_file} :", e)
     except yaml.YAMLError as e:
-        print("❌ YAML invalide:", e)
+        logger_process.error(f"YAML invalide: {e}")
     except Exception as e:
-        print("❌ Erreur inattendue:", e)
+        logger_process.error(f"Erreur inattendue: {e}")
 
     if yaml_data:
         yaml_data['hostname'] = client_name
@@ -163,11 +184,11 @@ def update_yaml(file_path, dict_client_data, client_name, num_infra_client):
         with open(cloud_init_file, 'w', encoding="utf-8") as f:
             yaml.dump(yaml_data, f)
     except (FileNotFoundError, PermissionError) as e:
-        print(f"❌ Erreur accès fichier {cloud_init_file} :", e)
+        logger_process.error(f"Erreur accès fichier {cloud_init_file} :", e)
     except yaml.YAMLError as e:
-        print("❌ YAML invalide:", e)
+        logger_process.error(f"YAML invalide: {e}")
     except Exception as e:
-        print("❌ Erreur inattendue:", e)
+        logger_process.error(f"Erreur inattendue: {e}")
 
     # TODO : Laisser l'utilisateur détaillé la config réseau
     # Network configuration
@@ -205,8 +226,7 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
     update_yaml(f"{project_root}/tf/stacks/{client_name}/infra{num_infra_client}", dict_data_client, client_name, num_infra_client)
 
 
-    print(f"Client '{client_name}' infra {num_infra_client} directories created successfully.")
-
+    logger_process.debug(f"Client '{client_name}' infra {num_infra_client} directories created successfully.")
 
 
 def run_ssh_command(ip,  command, username="toto"):
@@ -222,9 +242,9 @@ def run_ssh_command(ip,  command, username="toto"):
     project_dir = get_project_root()
     private_key_path = os.path.join(project_dir, "backend/ssh/id_rsa")
     key = paramiko.RSAKey.from_private_key_file(private_key_path)
-    print("Using private key:", private_key_path)
-    print("Connecting to:", ip)
-    print("Using username:", username)
+    logger_process.info("Using private key:", private_key_path)
+    logger_process.info("Connecting to:", ip)
+    logger_process.info("Using username:", username)
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # accepter hostkey auto
@@ -266,6 +286,7 @@ def run_ssh_command(ip,  command, username="toto"):
         waited += 0.2
 
     if url_container["url"] is None:
+        logger_process.error("Aucune URL tty-share détectée dans le délai imparti.")
         raise TimeoutError("Aucune URL tty-share détectée dans le délai imparti.")
 
     # retourne le client et le channel pour les garder vivants
@@ -273,14 +294,19 @@ def run_ssh_command(ip,  command, username="toto"):
 
 
 def get_vm_ip(path):
-    result = subprocess.run(
-        ["terraform", "output", "-json", "vm_ip"],
-        cwd=path,
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    return json.loads(result.stdout)
+    try:
+        result = subprocess.run(
+            ["terraform", "output", "-json", "vm_ip"],
+            cwd=path,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return json.loads(result.stdout)
+    except subprocess.CalledProcessError as e:
+        logger_process.error(f"Erreur lors de l'exécution de la commande Terraform: {e}")
+        return None
+    
 
 if __name__ == "__main__":
     #test

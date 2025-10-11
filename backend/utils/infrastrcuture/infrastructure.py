@@ -5,6 +5,22 @@ import json
 #todo : fichier logger
 from utils.exception.exception import *
 
+import logging
+
+logger_infra = logging.getLogger("process")
+logger_infra.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler("./logs/infra.log")
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+logger_infra.addHandler(file_handler)
+logger_infra.addHandler(console_handler)
 
 
 def get_vm_ip(path):
@@ -18,7 +34,7 @@ def get_vm_ip(path):
         )
         return json.loads(result.stdout)
     except subprocess.CalledProcessError as e:
-        print("Error occurred while getting VM IP, get_vm_ip function:", e)
+        logger_infra.error(f"Error occurred while getting VM IP, get_vm_ip function: {e}")
         return None
     
 
@@ -35,12 +51,15 @@ def run_infra(project_dir, client_name, num_infra):
     try:
         subprocess.run(["terraform", "init"], cwd=infra_dir, check=True)
         subprocess.run(["terraform", "apply", "-auto-approve"], cwd=infra_dir, check=True)
-        print("Infrastructure deployed successfully.")
+        logger_infra.info("Infrastructure deployed successfully.")
         return get_vm_ip(infra_dir)
     except subprocess.CalledProcessError as e:
-        print("Error occurred while deploying infrastructure:", e)
-        res = subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, capture_output=True)
-        print("Auto destruction for the infra ", res.stdout)
+        logger_infra.error(f"Error occurred while deploying infrastructure: {e}")
+        try:
+            res = subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, capture_output=True)
+            logger_infra.info(f"Auto destruction for the infra: {res.stdout}")
+        except subprocess.CalledProcessError as e:
+            logger_infra.error(f"Error occurred while auto destruction infrastructure: {e}")
         return None
 
 
@@ -57,8 +76,8 @@ def destroy_infra(project_dir, client_name, num_infra):
     try:
         subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, check=True)
     except subprocess.CalledProcessError as e:
-        print("Error occurred while destroying infrastructure:", e)
+        logger_infra.error(f"Error occurred while destroying infrastructure: {e}")
         raise InfraDestroyError(f"Terraform destroy a échoué : {e.stderr}")
 
 def create_ssh_key():
-    print("todo create ssh key")
+    logger_infra.debug("Creating SSH key...")
