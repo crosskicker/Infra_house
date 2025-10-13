@@ -7,7 +7,7 @@ from utils.exception.exception import *
 
 import logging
 
-logger_infra = logging.getLogger("process")
+logger_infra = logging.getLogger("infra")
 logger_infra.setLevel(logging.DEBUG)
 
 console_handler = logging.StreamHandler()
@@ -60,9 +60,10 @@ def run_infra(project_dir, client_name, num_infra):
             logger_infra.info(f"Auto destruction for the infra: {res.stdout}")
         except subprocess.CalledProcessError as e:
             logger_infra.error(f"Error occurred while auto destruction infrastructure: {e}")
-        return None
-
-
+        
+        finally:
+            raise InfraDeployError(f"Terraform apply a échoué : {e.stderr}")
+            #return None
 
 def destroy_infra(project_dir, client_name, num_infra):
     """
@@ -75,6 +76,7 @@ def destroy_infra(project_dir, client_name, num_infra):
     infra_dir = f"{project_dir}/tf/stacks/{client_name}/infra{num_infra}"
     try:
         subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, check=True)
+        logger_infra.info("Infrastructure destroyed successfully.")
     except subprocess.CalledProcessError as e:
         logger_infra.error(f"Error occurred while destroying infrastructure: {e}")
         raise InfraDestroyError(f"Terraform destroy a échoué : {e.stderr}")

@@ -1,0 +1,8 @@
+2025-10-13 16:32:14,596 - process - INFO - Infrastructure deployed successfully.
+2025-10-13 16:41:51,128 - process - INFO - VM deleted successfully: 68ed0d6ec3821e31a0393f15
+2025-10-13 17:04:48,045 - process - INFO - Infrastructure deployed successfully.
+2025-10-13 17:11:28,079 - process - INFO - Using private key: /home/cross/Bureau/projet/Infra_house/backend/ssh/id_rsa
+2025-10-13 17:11:28,080 - process - INFO - Connecting to: 192.168.123.242
+2025-10-13 17:11:28,080 - process - INFO - Using username: toto
+2025-10-13 17:16:16,212 - process - INFO - Infrastructure destroyed successfully.
+2025-10-13 17:16:16,296 - process - INFO - VM deleted successfully: 68ed1510c3821e31a0393f17

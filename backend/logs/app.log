@@ -1,1 +1,12 @@
 2025-10-10 18:27:49,454 - app - INFO - User logged in: toto
+2025-10-11 22:26:02,553 - app - INFO - Login attempt for user: toto
+2025-10-11 22:26:02,801 - app - INFO - User logged in: toto
+2025-10-13 16:30:43,415 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'myvm', 'Network': 'default', 'description': 'testeeer'}
+2025-10-13 16:40:51,474 - app - INFO - Received data for start shell: {'vm_id': '68ed0d6ec3821e31a0393f15'}
+2025-10-13 16:40:53,492 - app - ERROR - SSH Command Error for start shell: None
+2025-10-13 16:41:49,665 - app - INFO - Received data for destroy vm: {'vm_id': '68ed0d6ec3821e31a0393f15'}
+2025-10-13 17:02:41,319 - app - INFO - Login attempt for user: toto
+2025-10-13 17:02:41,528 - app - INFO - User logged in: toto
+2025-10-13 17:03:21,062 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '2', 'Memory': '2', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vroum', 'Network': 'default', 'description': 'tester encore'}
+2025-10-13 17:11:27,760 - app - INFO - Received data for start shell: {'vm_id': '68ed1510c3821e31a0393f17'}
+2025-10-13 17:16:14,891 - app - INFO - Received data for destroy vm: {'vm_id': '68ed1510c3821e31a0393f17'}

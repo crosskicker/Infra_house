@@ -4,13 +4,13 @@ import os, pymongo
 from datetime import datetime, timezone
 from pymongo import MongoClient, ReturnDocument, ASCENDING
 from bson import ObjectId
-from pymongo.errors import CollectionInvalid, OperationFailure
+from pymongo.errors import CollectionInvalid, OperationFailure, PyMongoError
 
 from utils.exception.exception import DatabaseError
 
 import logging
 
-logger_bdd = logging.getLogger("process")
+logger_bdd = logging.getLogger("bdd")
 logger_bdd.setLevel(logging.DEBUG)
 
 console_handler = logging.StreamHandler()
@@ -101,7 +101,7 @@ def create_user(email: str, password_hash: str) -> ObjectId:
         })
         logger_bdd.info(f"User created with pseudo: {email}, id: {res.inserted_id}")
         return res.inserted_id
-    except Exception as e:
+    except PyMongoError as e:
         logger_bdd.error(f"Error occurred while creating user: {e}")
         raise DatabaseError(f"Error creating user: {e}")
 
@@ -120,15 +120,30 @@ def upsert_vm(user_id: ObjectId, name:str ,os: str, external_id: str, num_infra:
     """
     now = datetime.now(timezone.utc)
 
-    return db.vms.find_one_and_update(
-        {"userId": user_id, "name": name, "os": os, "externalId": external_id, "numero_infra": num_infra},
-        {"$setOnInsert": {"createdAt": now},
-         "$set": {"lastSeen": now, **patch}},
-        upsert=True, return_document=ReturnDocument.AFTER
-    )
+    try:
+        return db.vms.find_one_and_update(
+            {"userId": user_id, "name": name, "os": os, "externalId": external_id, "numero_infra": num_infra},
+            {"$setOnInsert": {"createdAt": now},
+            "$set": {"lastSeen": now, **patch}},
+            upsert=True, return_document=ReturnDocument.AFTER
+        )
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while upserting VM: {e}")
+        raise DatabaseError(f"Error upserting VM: {e}")
+
+
 
 def list_user_vms(user_id: ObjectId):
-    return list(db.vms.find({"userId": user_id}).sort("createdAt", -1))
+    """ Liste les VMs d'un utilisateur, triées par date de création décroissante.
+        args: user_id : ObjectId de l'utilisateur
+    """
+    try:
+        return list(db.vms.find({"userId": user_id}).sort("createdAt", -1))
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while listing user VMs: {e}")
+        raise DatabaseError(f"Error listing user VMs: {e}")
+
+
 
 def user_with_vms(email: str):
     # Jointure via aggregate + $lookup
@@ -142,21 +157,31 @@ def user_with_vms(email: str):
         }},
         {"$project": {"passwordHash": 0}}
     ]
-    return list(db.users.aggregate(pipeline))[0]
+    try:
+        return list(db.users.aggregate(pipeline))[0]
+    except (PyMongoError, IndexError) as e:
+        logger_bdd.error(f"Error occurred while fetching user with VMs: {e}")
+        raise DatabaseError(f"Error fetching user with VMs: {e}")
+    
+
 
 def logging_user(username: str, password: str) -> bool:
     """
     Check if user exists with given username and password
     Useful for login
     """
-    user = db.users.find_one({
-        "email": username,
-        "passwordHash": password,
-        "isActive": True
-    })
-    print(user)
-    return user
-
+    try:
+        user = db.users.find_one({
+            "email": username,
+            "passwordHash": password,
+            "isActive": True
+        })
+        logger_bdd.debug(f"User login attempt for username: {user}")
+        return user
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while logging in user: {e}")
+        raise DatabaseError(f"Error logging in user: {e}")
+   
 
 
 def get_num_infra_client(user_id: ObjectId) -> int:
@@ -165,7 +190,11 @@ def get_num_infra_client(user_id: ObjectId) -> int:
     args user_id: ObjectId of the user
     return: int, number of infrastructure clients
     """
-    return db.vms.count_documents({"userId": user_id})
+    try:
+        return db.vms.count_documents({"userId": user_id})
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while counting infrastructure clients: {e}")
+        raise DatabaseError(f"Error counting infrastructure clients: {e}")
 
 
 
@@ -181,8 +210,10 @@ def get_num_infra_vm(vm_id: ObjectId) -> int:
             return vm['numero_infra']
         else:
             return None # lever une erreur car pas d'infra existante
-    except Exception as e:
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while fetching VM infrastructure number: {e}")
         raise DatabaseError(f"Error fetching VM infrastructure number: {e}")
+
 
 
 def get_login(user_id: ObjectId) -> str:
@@ -197,7 +228,8 @@ def get_login(user_id: ObjectId) -> str:
             return user['email']
         else:
             return None
-    except Exception as e:
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while fetching user login: {e}")
         raise DatabaseError(f"Error fetching user login: {e}")
         
 
@@ -209,11 +241,15 @@ def get_vm_ip_bdd(vm_id: ObjectId) -> str:
     args vm_id: ObjectId of the VM
     return: str, IP of the VM
     """
-    vm = db.vms.find_one({"_id": vm_id})
-    if vm and 'metadata' in vm and 'ip' in vm['metadata']:
-        return vm['metadata']['ip'] #todo : add ip apres démarage de la VM
-    else:
-        return None
+    try:
+        vm = db.vms.find_one({"_id": vm_id})
+        if vm and 'metadata' in vm and 'ip' in vm['metadata']:
+            return vm['metadata']['ip'] #todo : add ip apres démarage de la VM
+        else:
+            return None
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while fetching VM IP: {e}")
+        raise DatabaseError(f"Error fetching VM IP: {e}")
     
 
 
@@ -252,13 +288,19 @@ def get_vm_info(vm_id: ObjectId):
         return None
 
 
+
 def delete_vm_bdd(vm_id: ObjectId):
     """
     Delete a VM by its id
     args vm_id: ObjectId of the VM
     return: None
     """
-    db.vms.delete_one({"_id": vm_id})
+    try:
+        db.vms.delete_one({"_id": vm_id})
+        logger_bdd.info(f"VM deleted successfully: {vm_id}")
+    except PyMongoError as e:
+        logger_bdd.error(f"Error occurred while deleting VM: {e}")
+        raise DatabaseError(f"Error deleting VM: {e}")
 
 if __name__ == "__main__":
     ensure_collections_and_indexes()

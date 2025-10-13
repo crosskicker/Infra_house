@@ -229,6 +229,7 @@ def new_infra_client(client_name,num_infra_client, dict_data_client):
     logger_process.debug(f"Client '{client_name}' infra {num_infra_client} directories created successfully.")
 
 
+# TODO : gérer les erreurs de connexion SSH
 def run_ssh_command(ip,  command, username="toto"):
     """
     Exécute une commande SSH sur une VM avec clé privée.
@@ -242,9 +243,9 @@ def run_ssh_command(ip,  command, username="toto"):
     project_dir = get_project_root()
     private_key_path = os.path.join(project_dir, "backend/ssh/id_rsa")
     key = paramiko.RSAKey.from_private_key_file(private_key_path)
-    logger_process.info("Using private key:", private_key_path)
-    logger_process.info("Connecting to:", ip)
-    logger_process.info("Using username:", username)
+    logger_process.info(f"Using private key: {private_key_path}")
+    logger_process.info(f"Connecting to: {ip}")
+    logger_process.info(f"Using username: {username}")
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # accepter hostkey auto

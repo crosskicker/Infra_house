@@ -13,9 +13,10 @@ from utils.exception.exception import *
 
 
 # TODO : ajouter un filtre pour avoir le pseudo user
+# TODO : Ajouter COLORAMA pour les logs 
 
 # Logger setup
-# TODO : Ajouter un logger par module (fichier)
+
 logger_app = logging.getLogger("app")
 logger_app.setLevel(logging.DEBUG)
 
@@ -121,7 +122,7 @@ def create_vm():
         
     # TODO : create a loading page while VM is being created
     # TODO : return VM info when ready (ip, user, mdp, ssh key, ...)
-    return jsonify({"message": "VM created", "data": data}), 201
+    return jsonify({"results": "VM created", "data": data}), 201
 
 
 
@@ -134,7 +135,8 @@ def start_shell():
     command = "sudo /usr/local/bin/tty-share --public"
     output, err = run_ssh_command(ip, command)
     logger_app.debug(f"SSH Command Output: {output}")
-    logger_app.error(f"SSH Command Error for start shell: {err}")
+    if err:
+        logger_app.error(f"SSH Command Error for start shell: {err}")
     return jsonify({"results": output}), 200
 
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import SelectList from "../components/SelectList";
 import { fetchData } from "../fetch";
+import { useNavigate } from "react-router";
 import {
   Form,
   FormControl,
@@ -15,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 // TODO : Implementer le reset bouton
-// TODO : redirect apres le deploiement operationnel ( vers Infra )
+// TODO : Afficher les erreurs en cas de rejet de la création de la VM
 function DeployVM() {
   const [os] = useState([
     "Other",
@@ -28,6 +29,8 @@ function DeployVM() {
   const [Memory] = useState(["1", "2", "4", "8", "16"]);
   const [Disk] = useState(["10", "20", "50", "100"]);
   const [Network] = useState(["NAT", "bridge", "default"]);
+
+  const nav = useNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -44,7 +47,14 @@ function DeployVM() {
 
   async function mySubmit(values) {
     console.log("Données à envoyer :", values);
-    await fetchData(values, "/api/create-vm");
+    const resp = await fetchData(values, "/api/create-vm");
+    if (resp == "VM created"){
+      console.log("VM created");
+      nav("/infrastructure-view");
+    }
+    else {
+      console.log("Error :", resp);
+    }
   }
 
   return (
