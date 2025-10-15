@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { Home, Server, Settings, LogOut, User, CloudCog } from "lucide-react";
+import { Home, Server, Settings, LogOut, User, CloudCog, MonitorPlay } from "lucide-react";
 
 // Exemple fallback icons si tu n'as pas icons.js
 const DefaultIcon = ({ children }) => (
@@ -55,7 +55,7 @@ function NavigationBar({ user = null }) {
         <div className="flex items-center gap-2">
           <Link to="/">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
-              X
+              <MonitorPlay />
             </div>
           </Link>
           <div className="flex flex-col">

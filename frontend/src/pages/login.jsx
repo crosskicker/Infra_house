@@ -1,6 +1,19 @@
 import { useForm, Controller } from "react-hook-form";
 import { fetchData } from "../fetch";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function Login({ setIsLoggedIn }) {
   const {
@@ -29,43 +42,57 @@ function Login({ setIsLoggedIn }) {
   };
 
   return (
-    <div className="flex flex-col">
-      <h1>Login Page</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          name="username"
-          control={control}
-          rules={{ required: true }}
-          defaultValue=""
-          render={({ field }) => <input {...field} placeholder="Username" />}
-        />
-        <Controller
-          name="password"
-          control={control}
-          rules={{ required: true }}
-          defaultValue=""
-          render={({ field }) => (
-            <input {...field} type="password" placeholder="Password" />
-          )}
-        />
-        <button
-          type="submit"
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          disabled={isSubmitting}
-        >
-          Login
-        </button>
-      </form>
-      <button
-        onClick={() => {
-          navigate("/signup");
-        }}
-        className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-      >
-        Sign Up
-      </button>
-      
-    </div>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+        <CardAction>
+          <Button variant="link"> <Link to="/signup">Sign Up</Link></Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-6">
+            <Label htmlFor="login">Login</Label>
+            <Controller
+              name="username"
+              control={control}
+              rules={{ required: true }}
+              defaultValue=""
+              render={({ field }) => (
+                <Input {...field} placeholder="Username" />
+              )}
+            />
+            <Label htmlFor="password">Password</Label>
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: true }}
+              defaultValue=""
+              render={({ field }) => (
+                <Input {...field} type="password" placeholder="Password" />
+              )}
+            />
+          </div>
+          <CardFooter className="flex-col !p-0 !pt-6 ">
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              Login
+            </Button>
+            <Button
+              onClick={() => {
+                navigate("/signup");
+              }}
+              className="w-full mt-2"
+              variant="outline"
+            >
+              Sign Up
+            </Button>
+          </CardFooter>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 

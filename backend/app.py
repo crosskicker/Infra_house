@@ -13,7 +13,10 @@ from utils.exception.exception import *
 
 
 # TODO : ajouter un filtre pour avoir le pseudo user
-# TODO : Ajouter COLORAMA pour les logs 
+# TODO : endpoint pour stopper une VM   
+           # terraform destroy et garder le dossier ? 
+           # Gérer les etats via les tfstates...
+
 
 # Logger setup
 

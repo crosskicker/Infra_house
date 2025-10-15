@@ -15,3 +15,19 @@
 2025-10-15 10:38:46,265 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'myvm', 'Network': 'default', 'description': 'test'}
 2025-10-15 10:43:03,530 - app - INFO - Received data for start shell: {'vm_id': '68ef5dd8df07b02d7c0c6e87'}
 2025-10-15 10:48:17,158 - app - INFO - Received data for destroy vm: {'vm_id': '68ef5dd8df07b02d7c0c6e87'}
+2025-10-15 16:44:18,728 - app - INFO - Login attempt for user: toto
+2025-10-15 16:44:18,943 - app - INFO - User logged in: toto
+2025-10-15 16:51:06,874 - app - INFO - Login attempt for user: toto
+2025-10-15 16:51:06,899 - app - INFO - User logged in: toto
+2025-10-15 17:00:10,476 - app - INFO - Login attempt for user: toto
+2025-10-15 17:00:10,494 - app - INFO - User logged in: toto
+2025-10-15 17:00:41,387 - app - INFO - Login attempt for user: toto
+2025-10-15 17:00:41,411 - app - INFO - User logged in: toto
+2025-10-15 17:05:58,411 - app - INFO - Login attempt for user: toto
+2025-10-15 17:05:58,435 - app - INFO - User logged in: toto
+2025-10-15 17:16:26,287 - app - INFO - Login attempt for user: toto
+2025-10-15 17:16:26,310 - app - INFO - User logged in: toto
+2025-10-15 17:20:10,998 - app - INFO - Login attempt for user: toto
+2025-10-15 17:20:11,018 - app - INFO - User logged in: toto
+2025-10-15 17:45:04,478 - app - INFO - Login attempt for user: toto
+2025-10-15 17:45:04,504 - app - INFO - User logged in: toto
