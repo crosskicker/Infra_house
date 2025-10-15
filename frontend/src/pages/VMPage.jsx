@@ -46,7 +46,7 @@ function VMPage() {
   }
 
   async function getInfoVM(){
-    const resp = await fetchData({ vm_id: vm_id }, "/api/get-vm-info");
+    const resp = await fetchData({ vm_id: vm_id }, "/api/vm-info");
     if (resp == "error") {
       
       console.log(resp);

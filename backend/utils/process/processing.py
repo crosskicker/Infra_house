@@ -264,21 +264,22 @@ def run_ssh_command(ip,  command, username="toto"):
         while True:
             if channel.recv_ready():
                 chunk = channel.recv(4096).decode("utf-8", errors="ignore")
-                print("[TTY-SHARE OUT]", chunk.strip())
+                
                 if "https" in chunk and url_container["url"] is None:
-                    channel.send("\n") # pour lancer le tty-share
+                    
                     for word in chunk.split():
                         if word.startswith("https"):
                             url_container["url"] = word
-                            print("[URL FOUND]", word)
+                            
             if channel.recv_stderr_ready():
                 chunk = channel.recv_stderr(4096).decode("utf-8", errors="ignore")
-                print("[TTY-SHARE ERR]", chunk.strip())
+                logger_process.error(f"[TTY-SHARE ERR] {chunk.strip()}")
             if channel.exit_status_ready():
                 break
 
     t = threading.Thread(target=reader, daemon=True)
     t.start()
+    channel.send("\n") # pour lancer le tty-share
 
     timeout = 10  # secondes
     waited = 0
@@ -291,6 +292,7 @@ def run_ssh_command(ip,  command, username="toto"):
         raise TimeoutError("Aucune URL tty-share détectée dans le délai imparti.")
 
     # retourne le client et le channel pour les garder vivants
+    logger_process.info(f"TTY-SHARE URL: {url_container['url']}")
     return url_container["url"] , None
 
 

@@ -6,3 +6,7 @@
 2025-10-13 17:11:28,080 - process - INFO - Using username: toto
 2025-10-13 17:16:16,212 - process - INFO - Infrastructure destroyed successfully.
 2025-10-13 17:16:16,296 - process - INFO - VM deleted successfully: 68ed1510c3821e31a0393f17
+2025-10-15 10:43:03,862 - process - INFO - Using private key: /home/cross/Bureau/projet/Infra_house/backend/ssh/id_rsa
+2025-10-15 10:43:03,863 - process - INFO - Connecting to: 192.168.123.101
+2025-10-15 10:43:03,863 - process - INFO - Using username: toto
+2025-10-15 10:43:05,475 - process - INFO - TTY-SHARE URL: https://on.tty-share.com/s/SjpxdRX6t0N8Dym-avE7TIeU-GvoVh5i0BMa_WQXnQfZgG533xQVcTnIUwxId_Mjb4w/

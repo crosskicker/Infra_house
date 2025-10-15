@@ -6,3 +6,5 @@
 2025-10-13 17:11:28,080 - process - INFO - Using username: toto
 2025-10-13 17:16:16,212 - process - INFO - Infrastructure destroyed successfully.
 2025-10-13 17:16:16,296 - process - INFO - VM deleted successfully: 68ed1510c3821e31a0393f17
+2025-10-15 10:39:52,701 - infra - INFO - Infrastructure deployed successfully.
+2025-10-15 10:48:18,617 - infra - INFO - Infrastructure destroyed successfully.
