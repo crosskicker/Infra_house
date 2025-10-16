@@ -21,9 +21,9 @@ function HomePage() {
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100">
       <h1 className="text-4xl font-bold mb-8 [text-shadow:2px_2px_6px_rgba(0,0,0,0.2)]">Welcome to Crossland Infra.</h1>
 
-      {!isLoggedIn && <Login setIsLoggedIn={setIsLoggedIn} />}
+      
 
-      {isLoggedIn && (
+      
         <div className="space-x-4">
           <Card>
             <CardHeader>
@@ -64,7 +64,7 @@ function HomePage() {
             </CardFooter>
           </Card>
         </div>
-      )}
+      
     </div>
   );
 }

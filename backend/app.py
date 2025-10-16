@@ -6,6 +6,12 @@ from flask_caching import Cache
 from dotenv import load_dotenv
 import os
 import logging
+from flask_jwt_extended import (
+    JWTManager, create_access_token, jwt_required,
+    get_jwt_identity
+)
+from datetime import timedelta
+
 from utils.bdd.bdd import *
 from utils.process.processing import *
 from utils.infrastrcuture.infrastructure import *
@@ -47,6 +53,10 @@ app.config["SESSION_COOKIE_NAME"] = "session"
 app.config["SESSION_COOKIE_SAMESITE"] = "None" # Autoriser les cookies cross-origin
 app.config["SESSION_COOKIE_SECURE"] = True # Only over HTTPS
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])  # CORS enabled for flask
+app.config["JWT_SECRET_KEY"] = "ton_secret_key_super_secure" # TODO : env var
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
+
+jwt = JWTManager(app)
 
 
  
@@ -81,7 +91,11 @@ def login():
     if user:
         logger_app.info(f"User logged in: {data.get('username')}")
         session['user_id'] = str(user["_id"])
-        return jsonify({"results": "success"}), 200
+        
+        
+        # TODO : Proteger les routes avec @jwt_required()
+        access_token = create_access_token(identity=str(user["_id"]))
+        return jsonify({"results": "success", "token": access_token}), 200
     else:
         return jsonify({"results": "error"}), 401
 

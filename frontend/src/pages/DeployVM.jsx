@@ -48,12 +48,12 @@ function DeployVM() {
   async function mySubmit(values) {
     console.log("Données à envoyer :", values);
     const resp = await fetchData(values, "/api/create-vm");
-    if (resp == "VM created"){
+    if (resp.results == "VM created"){
       console.log("VM created");
       nav("/infrastructure-view");
     }
     else {
-      console.log("Error :", resp);
+      console.log("Error :", resp.results);
     }
   }
 

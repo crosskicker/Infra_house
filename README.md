@@ -17,7 +17,8 @@ To deploy an infrastrcuture auto via a web interface
 ### TODO GENERAL
 
 * Gérer le logout
-  * Refaire la page sign up
+  * Faire une auto deconnexion apres expired
+  * Implementer le bouton logout
 
 - ISOLER LES VMS
 
@@ -32,3 +33,6 @@ To deploy an infrastrcuture auto via a web interface
 - Gérer le dispplay des erreurs des forms (deploy vm)
 - Refaire le design de la homepage
 - Visualiser un schéma d'infra réalisé
+- Créer une page profil
+- Gérer les states des VMs pour ajouter des options
+-

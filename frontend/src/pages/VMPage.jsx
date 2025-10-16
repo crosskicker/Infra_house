@@ -23,23 +23,23 @@ function VMPage() {
   async function runShell() {
     console.log("Starting shell for VM ID:", vm_id);
     const resp = await fetchData({ vm_id: vm_id }, "/api/start-shell");
-    if (resp == "error") {
-      console.log(resp);
+    if (resp.results == "error") {
+      console.log(resp.results);
     } else {
-      console.log(resp);
-      setTtyShareUrl(resp);
+      console.log(resp.results);
+      setTtyShareUrl(resp.results);
       getInfoVM();
     }
   }
 
   async function destroyVM() {
     const resp = await fetchData({ vm_id: vm_id }, "/api/destroy-vm");
-    if (resp == "error") {
+    if (resp.results == "error") {
       
-      console.log(resp);
+      console.log(resp.results);
       //todo : display un msg d'erreur
     } else {
-      console.log(resp);
+      console.log(resp.results);
       nav("/infrastructure-view");
       
     }
@@ -47,13 +47,13 @@ function VMPage() {
 
   async function getInfoVM(){
     const resp = await fetchData({ vm_id: vm_id }, "/api/vm-info");
-    if (resp == "error") {
+    if (resp.results == "error") {
       
-      console.log(resp);
+      console.log(resp.results);
       
     } else {
-      console.log(resp);
-      setVm(resp);
+      console.log(resp.results);
+      setVm(resp.results);
     }
   }
 

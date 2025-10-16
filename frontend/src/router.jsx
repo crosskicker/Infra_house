@@ -7,27 +7,32 @@ import SignUp from "./pages/signup";
 import InfraView from "./pages/InfraView";
 import VMPage from "./pages/VMPage";
 import { infrastructureLoader } from "./loader";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element:(
+      <ProtectedRoute>
+        <App />
+      </ProtectedRoute>
+    ),
     //errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <HomePage />,
       },
-      {
+      /* {
         path: "/login",
         element: <HomePage/>,
       },
       {
         path: "/signup",
         element: <SignUp />,
-      },
+      }, */
       {
         path: "/vm/create",
         element: <DeployVM />,
@@ -48,4 +53,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <SignUp /> },
 ]);

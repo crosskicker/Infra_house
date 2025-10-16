@@ -49,7 +49,7 @@ export async function fetchData(value, url) {
     });
     if (response.ok) {
       const reponse = await response.json();
-      return reponse.results;
+      return reponse; 
     } else {
       const errorData = await response.json();
       return { error: "Server error " + errorData.message };

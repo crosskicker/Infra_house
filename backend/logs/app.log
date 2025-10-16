@@ -31,3 +31,5 @@
 2025-10-15 17:20:11,018 - app - INFO - User logged in: toto
 2025-10-15 17:45:04,478 - app - INFO - Login attempt for user: toto
 2025-10-15 17:45:04,504 - app - INFO - User logged in: toto
+2025-10-16 14:21:19,727 - app - INFO - Login attempt for user: toto
+2025-10-16 14:21:19,914 - app - INFO - User logged in: toto

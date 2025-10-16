@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function Login({ setIsLoggedIn }) {
+function Login() {
   const {
     control,
     handleSubmit,
@@ -32,16 +32,21 @@ function Login({ setIsLoggedIn }) {
   const onSubmit = async (data) => {
     console.log("Login data:", data);
     const resp = await fetchData(data, "/api/login");
-    if (resp == "success") {
-      console.log(resp);
-      setIsLoggedIn(true);
+    if (resp.results == "success") {
+      console.log(resp.results);
+      const token = resp.token;
+      localStorage.setItem("token", token);
+      navigate("/");
+      
     } else {
-      console.log(resp);
+      console.log(resp.results);
       alert("Login failed");
     }
   };
 
   return (
+    <div className="flex flex-col items-center justify-center h-screen w-full bg-gray-100">
+      <h1 className="text-4xl font-bold mb-8 [text-shadow:2px_2px_6px_rgba(0,0,0,0.2)]">Welcome to Crossland Infra.</h1>
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
@@ -93,6 +98,7 @@ function Login({ setIsLoggedIn }) {
         </form>
       </CardContent>
     </Card>
+    </div>
   );
 }
 
