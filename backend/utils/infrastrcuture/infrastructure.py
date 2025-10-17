@@ -54,15 +54,15 @@ def run_infra(project_dir, client_name, num_infra):
         logger_infra.info("Infrastructure deployed successfully.")
         return get_vm_ip(infra_dir)
     except subprocess.CalledProcessError as e:
-        logger_infra.error(f"Error occurred while deploying infrastructure: {e}")
+        logger_infra.error(f"Error occurred while deploying infrastructure:{infra_dir} ; {e}")
         try:
             res = subprocess.run(["terraform", "destroy", "-auto-approve"], cwd=infra_dir, capture_output=True)
-            logger_infra.info(f"Auto destruction for the infra: {res.stdout}")
+            logger_infra.info(f"Auto destruction for the infra: {infra_dir}")
         except subprocess.CalledProcessError as e:
-            logger_infra.error(f"Error occurred while auto destruction infrastructure: {e}")
-        
+            logger_infra.error(f"Error occurred while auto destruction infrastructure: {infra_dir} ; {e}")
+
         finally:
-            raise InfraDeployError(f"Terraform apply a échoué : {e.stderr}")
+            raise InfraDeployError(f"Terraform apply a échoué pour l'infrastructure {infra_dir} ")
             #return None
 
 def destroy_infra(project_dir, client_name, num_infra):

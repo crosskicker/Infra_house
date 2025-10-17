@@ -7,3 +7,4 @@
 2025-10-13 17:16:16,212 - process - INFO - Infrastructure destroyed successfully.
 2025-10-13 17:16:16,296 - process - INFO - VM deleted successfully: 68ed1510c3821e31a0393f17
 2025-10-15 10:48:18,670 - bdd - INFO - VM deleted successfully: 68ef5dd8df07b02d7c0c6e87
+2025-10-17 15:11:42,878 - bdd - INFO - VM deleted successfully: 68f23f59df07b02d7c0c7005

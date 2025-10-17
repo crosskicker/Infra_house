@@ -20,7 +20,7 @@ resource "libvirt_volume" "image" {
 }
 
 resource "libvirt_volume" "disk" {
-  name            = "vm-disk-test"
+  name            = "disk-${var.client_name}-${var.image_name}-${var.domain_num}"
   base_volume_id  = libvirt_volume.image.id
   pool            = "default"
   size            = var.disk_size // in bytes
@@ -35,7 +35,7 @@ data "template_file" "network_config" {
 }
 
 resource "libvirt_cloudinit_disk" "commoninit" {
-  name           = "${var.iso_name}.iso"
+  name           = "${var.client_name}-${var.image_name}-${var.domain_num}.iso"
   user_data      = data.template_file.user_data.rendered
   network_config = data.template_file.network_config.rendered
   //pool           = libvirt_pool.ubuntu.name

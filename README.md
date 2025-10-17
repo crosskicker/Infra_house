@@ -17,22 +17,30 @@ To deploy an infrastrcuture auto via a web interface
 ### TODO GENERAL
 
 * Gérer le logout
-  * Faire une auto deconnexion apres expired
-  * Implementer le bouton logout
+  * Sécuriser le token
 
 - ISOLER LES VMS
 
   - un réseau nat par VM
   - ameliorer la config reseau pour le user
+- Geer les erreur de control des form et retour erreur (affichage)
 - Gerer les états  systeme lors des changements d'infra
 - <b>Gérer le monitoring des ressources</b>
-- Raise les erreurs app a chaque catch
 - Gérer le visu du tableau de bord infra
-- Gérer le  système de connexion
 - Gérer les états du shell au cours de son cycle de vie
 - Gérer le dispplay des erreurs des forms (deploy vm)
-- Refaire le design de la homepage
 - Visualiser un schéma d'infra réalisé
 - Créer une page profil
 - Gérer les states des VMs pour ajouter des options
--
+- PERMETTRE la modification d'un VM, changer sa ram etc ...
+
+  - suffit de changer les var et relancer le main.tf avec apply ?
+  - eteindre une VM "running = false   # VM éteinte"
+
+TODO ADMIN
+
+* Générer un pannel admin  pour voir les ressources serveur
+  * tailles des volumes
+  * nombres de vm
+  * ressources utilisée
+  * nombre de disk (tailles etc)

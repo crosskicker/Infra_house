@@ -33,3 +33,20 @@
 2025-10-15 17:45:04,504 - app - INFO - User logged in: toto
 2025-10-16 14:21:19,727 - app - INFO - Login attempt for user: toto
 2025-10-16 14:21:19,914 - app - INFO - User logged in: toto
+2025-10-17 13:41:42,323 - app - INFO - Login attempt for user: toto
+2025-10-17 13:41:42,346 - app - INFO - User logged in: toto
+2025-10-17 13:47:25,612 - app - INFO - Login attempt for user: toto
+2025-10-17 13:47:25,639 - app - INFO - User logged in: toto
+2025-10-17 13:47:46,187 - app - INFO - Login attempt for user: toto
+2025-10-17 13:47:46,208 - app - INFO - User logged in: toto
+2025-10-17 14:47:11,698 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm1', 'Network': 'default', 'description': 'first vm'}
+2025-10-17 14:48:37,087 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm2', 'Network': 'default', 'description': 'deuxieme vm'}
+2025-10-17 14:48:55,254 - app - ERROR - Application error ; serveur respond with 500 error : Terraform apply a échoué : None
+2025-10-17 15:03:58,437 - app - INFO - Login attempt for user: toto
+2025-10-17 15:03:58,462 - app - INFO - User logged in: toto
+2025-10-17 15:05:39,344 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm1', 'Network': 'default', 'description': 'test vm1'}
+2025-10-17 15:09:24,905 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm2', 'Network': 'default', 'description': 'test deuxieme vm'}
+2025-10-17 15:09:42,213 - app - ERROR - Application error ; serveur respond with 500 error : Terraform apply a échoué pour l'infrastructure /home/cross/Bureau/projet/Infra_house/tf/stacks/toto/infra2 
+2025-10-17 15:11:41,991 - app - INFO - Received data for destroy vm: {'vm_id': '68f23f59df07b02d7c0c7005'}
+2025-10-17 15:15:38,544 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm1', 'Network': 'default', 'description': 'first vm'}
+2025-10-17 15:17:59,480 - app - INFO - Create VM request data: {'OS': 'Ubuntu-20', 'Vcpu': '1', 'Memory': '1', 'Disk': '10', 'ssh_key': 'ssh-rsa AAAA', 'name': 'vm2', 'Network': 'default', 'description': 'test deuxieme vm'}

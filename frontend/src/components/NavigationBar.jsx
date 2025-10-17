@@ -113,8 +113,10 @@ function NavigationBar({ user = null }) {
               Profile
             </Button>
           </Link>
-          <Link to="/logout">
-            <Button size="sm" variant="destructive" className="w-full">
+          <Link to="/login">
+            <Button size="sm" variant="destructive" className="w-full" onClick={() => {
+              localStorage.removeItem("token");
+            }}>
               <LogOut className="w-4 h-4" />
               Logout
             </Button>
